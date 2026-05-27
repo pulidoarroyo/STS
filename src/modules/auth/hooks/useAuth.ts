@@ -9,12 +9,17 @@ export function useAuth() {
     useEffect(() => {
         // 1. Get initial session active status
         const getSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                setUser(session.user);
-                await fetchProfile(session.user.id);
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    setUser(session.user);
+                    await fetchProfile(session.user.id);
+                }
+            } catch (err) {
+                console.error('Error getting initial session:', err);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
         getSession();
@@ -22,14 +27,19 @@ export function useAuth() {
         // 2. Listen to dynamic auth state adjustments (Login / Logout events)
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
-                if (session) {
-                    setUser(session.user);
-                    await fetchProfile(session.user.id);
-                } else {
-                    setUser(null);
-                    setProfile(null);
+                try {
+                    if (session) {
+                        setUser(session.user);
+                        await fetchProfile(session.user.id);
+                    } else {
+                        setUser(null);
+                        setProfile(null);
+                    }
+                } catch (err) {
+                    console.error('Error handling auth state change:', err);
+                } finally {
+                    setLoading(false);
                 }
-                setLoading(false);
             }
         );
 
@@ -38,14 +48,23 @@ export function useAuth() {
 
     // Fetch the extended business data profile from public.profiles
     const fetchProfile = async (userId: string) => {
-        const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', userId)
-            .single();
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', userId)
+                .single();
 
-        if (!error && data) {
-            setProfile(data);
+            if (error) {
+                console.error('Error fetching profile:', error.message);
+                return;
+            }
+
+            if (data) {
+                setProfile(data);
+            }
+        } catch (err) {
+            console.error('Exception fetching profile:', err);
         }
     };
 
