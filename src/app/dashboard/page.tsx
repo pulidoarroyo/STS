@@ -21,8 +21,9 @@ function DashboardPage() {
     const router = useRouter();
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [loading, setLoading] = useState(true);
-    const [metrics, setMetrics] = useState({ total: 0, open: 0, critical: 0 });
+    const [metrics, setMetrics] = useState({ total: 0, open: 0, critical: 0, resolved: 0 });
     const [role, setRole] = useState<string | null>(null);
+    const [userName, setUserName] = useState<string | null>(null);
     const [filterStatus, setFilterStatus] = useState<string>('All');
     const [filterPriority, setFilterPriority] = useState<string>('All');
 
@@ -42,16 +43,17 @@ function DashboardPage() {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) return;
 
-                // Fetch user role from profiles
+                // Fetch user role and name from profiles
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
-                    .select('role')
+                    .select('role, full_name')
                     .eq('id', user.id)
                     .single();
 
                 if (profileError) throw profileError;
                 const userRole = profile?.role || 'User';
                 setRole(userRole);
+                setUserName(profile?.full_name || user.email || 'Usuario');
 
                 // Fetch tickets based on role (Admins/Agents see all, standard users see only their own)
                 let query = supabase
@@ -77,9 +79,10 @@ function DashboardPage() {
                     // Calcular métricas rápidas para las tarjetas
                     const total = formattedTickets.length;
                     const open = formattedTickets.filter(t => t.status === 'Open').length;
+                    const resolved = formattedTickets.filter(t => t.status === 'Resolved').length;
                     const critical = formattedTickets.filter(t => t.ai_risk_level?.toLowerCase() === 'critical' || t.ai_risk_level?.toLowerCase() === 'high').length;
 
-                    setMetrics({ total, open, critical });
+                    setMetrics({ total, open, critical, resolved });
                 }
             } catch (error: any) {
                 console.error('Error en el dashboard:', error.message);
@@ -157,27 +160,48 @@ function DashboardPage() {
                         >
                             + Crear Nuevo Ticket
                         </Link>
-                        <button
-                            onClick={handleSignOut}
-                            className="inline-flex justify-center items-center px-4 py-2.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 font-medium text-sm rounded-md shadow-sm transition-all text-center"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-2">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-                            </svg>
-                            Cerrar Sesión
-                        </button>
+
+                        {/* User info + logout */}
+                        <div className="flex items-center gap-2 pl-3 border-l border-gray-200">
+                            {/* Avatar with initials */}
+                            <div
+                                className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold select-none"
+                                title={userName || ''}
+                            >
+                                {userName
+                                    ? userName.trim().split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
+                                    : '?'}
+                            </div>
+                            <span className="text-sm font-medium text-gray-700 max-w-[120px] truncate hidden sm:block">
+                                {userName}
+                            </span>
+                            <button
+                                onClick={handleSignOut}
+                                title="Cerrar Sesión"
+                                className="inline-flex justify-center items-center px-3 py-2 bg-white hover:bg-red-50 text-gray-500 hover:text-red-600 border border-gray-200 hover:border-red-200 font-medium text-sm rounded-md shadow-sm transition-all"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                                </svg>
+                                <span className="ml-2 hidden sm:inline">Cerrar Sesión</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {/* Tarjetas de Métricas */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
                     <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                         <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">Total Reportados</p>
                         <p className="text-3xl font-bold text-gray-800 mt-2">{metrics.total}</p>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm border-l-4 border-l-blue-500">
                         <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">En Proceso (Abiertos)</p>
                         <p className="text-3xl font-bold text-blue-600 mt-2">{metrics.open}</p>
+                    </div>
+                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm border-l-4 border-l-green-500">
+                        <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">Resueltos</p>
+                        <p className="text-3xl font-bold text-green-600 mt-2">{metrics.resolved}</p>
                     </div>
                     <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm border-l-4 border-l-red-500">
                         <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">Prioridad Crítica / Alta (IA)</p>
