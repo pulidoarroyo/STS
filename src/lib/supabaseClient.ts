@@ -10,9 +10,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Initialize a single, reusable Supabase client instance
 export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
     auth: {
-        // Disable session persistence to avoid stale cookies across reloads
-        persistSession: false,
-        autoRefreshToken: false,
+        persistSession: true,
+        autoRefreshToken: true,
         detectSessionInUrl: false,
     }
 });
