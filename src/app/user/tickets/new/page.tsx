@@ -157,17 +157,17 @@ function NewTicketPage() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md border border-gray-100">
+        <div className="max-w-2xl mx-auto mt-10 p-8 bg-card rounded-xl shadow-lg border border-border">
             <div className="mb-6">
-                <Link href="/dashboard" className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition-colors">
+                <Link href="/dashboard" className="text-sm font-medium text-accent hover:text-accent-hover flex items-center gap-1.5 transition-colors">
                     ← Volver al Panel de Soporte
                 </Link>
             </div>
 
-            <h1 className="text-2xl font-bold text-gray-800 mb-6">Crear Nuevo Ticket de Soporte</h1>
+            <h1 className="text-2xl font-bold text-foreground mb-6">Crear Nuevo Ticket de Soporte</h1>
 
             {message && (
-                <div className={`p-4 mb-4 rounded-md text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+                <div className={`p-4 mb-4 rounded-lg text-sm border ${message.type === 'success' ? 'bg-success-subtle text-success border-success/20' : 'bg-danger-subtle text-danger border-danger/20'
                     }`}>
                     {message.text}
                 </div>
@@ -175,24 +175,24 @@ function NewTicketPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Título del Incidente</label>
+                    <label className="block text-sm font-medium text-secondary mb-1.5">Título del Incidente</label>
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         required
                         placeholder="Ej. Mi laptop no conecta al WiFi corporativo"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                        className="w-full px-3.5 py-2.5 border border-border bg-elevated rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent text-foreground placeholder-muted transition-all"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                    <label className="block text-sm font-medium text-secondary mb-1.5">Categoría</label>
                     <select
                         value={categoryId}
                         onChange={(e) => setCategoryId(e.target.value)}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                        className="w-full px-3.5 py-2.5 border border-border bg-elevated rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent text-foreground transition-all"
                     >
                         {categories.length === 0 ? (
                             <option value="">Cargando categorías...</option>
@@ -207,21 +207,21 @@ function NewTicketPage() {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Descripción Detallada</label>
+                    <label className="block text-sm font-medium text-secondary mb-1.5">Descripción Detallada</label>
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         required
                         rows={5}
                         placeholder="Describe detalladamente lo que sucede..."
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                        className="w-full px-3.5 py-2.5 border border-border bg-elevated rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent text-foreground placeholder-muted transition-all"
                     />
                 </div>
 
                 <button
                     type="submit"
                     disabled={loading || categories.length === 0}
-                    className={`w-full py-2.5 px-4 font-semibold text-white rounded-md transition-all ${loading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                    className={`w-full py-2.5 px-4 font-semibold text-white rounded-lg transition-all ${loading ? 'bg-accent/50 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover shadow-lg shadow-accent/20'
                         }`}
                 >
                     {loading ? 'Procesando...' : 'Enviar Ticket'}

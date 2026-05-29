@@ -229,51 +229,51 @@ function TicketDetailPage() {
 
     const getRiskBadge = (level: string) => {
         switch (level?.toLowerCase()) {
-            case 'critical': return 'bg-red-100 text-red-800 border-red-200';
-            case 'high': return 'bg-orange-100 text-orange-800 border-orange-200';
-            case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            case 'low': return 'bg-green-100 text-green-800 border-green-200';
-            default: return 'bg-gray-100 text-gray-800 border-gray-200';
+            case 'critical': return 'bg-critical-subtle text-critical border-critical/30';
+            case 'high': return 'bg-high-subtle text-high border-high/30';
+            case 'medium': return 'bg-medium-subtle text-medium border-medium/30';
+            case 'low': return 'bg-low-subtle text-low border-low/30';
+            default: return 'bg-elevated text-muted border-border';
         }
     };
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="flex justify-center items-center min-h-screen bg-surface">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
             </div>
         );
     }
 
     if (!ticket) {
         return (
-            <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center text-gray-900">
-                <p className="text-lg font-medium text-gray-500">No se encontró el ticket solicitado.</p>
-                <Link href="/dashboard" className="mt-4 text-blue-600 hover:underline">Volver al panel</Link>
+            <div className="min-h-screen bg-surface flex flex-col justify-center items-center text-foreground">
+                <p className="text-lg font-medium text-muted">No se encontró el ticket solicitado.</p>
+                <Link href="/dashboard" className="mt-4 text-accent hover:underline">Volver al panel</Link>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6 sm:p-10 text-gray-900">
+        <div className="min-h-screen bg-surface p-6 sm:p-10 text-foreground">
             <div className="max-w-5xl mx-auto">
 
                 {/* Botón de Retorno */}
                 <div className="mb-6">
-                    <Link href="/dashboard" className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition-colors">
+                    <Link href="/dashboard" className="text-sm font-medium text-accent hover:text-accent-hover flex items-center gap-1.5 transition-colors">
                         ← Volver al Panel de Soporte
                     </Link>
                 </div>
 
                 {/* Título Principal */}
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-6 mb-8 gap-4">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-border pb-6 mb-8 gap-4">
                     <div>
-                        <span className="text-xs uppercase tracking-wider font-semibold text-gray-400">Detalle del Incidente</span>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{ticket.title}</h1>
-                        <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
-                            <span>Registrado el: <strong>{new Date(ticket.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</strong></span>
+                        <span className="text-xs uppercase tracking-wider font-semibold text-muted">Detalle del Incidente</span>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mt-1">{ticket.title}</h1>
+                        <div className="flex items-center gap-3 mt-2 text-xs text-muted">
+                            <span>Registrado el: <strong className="text-secondary">{new Date(ticket.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</strong></span>
                             <span>•</span>
-                            <span>Categoría: <strong>{ticket.categories?.name || 'General'}</strong></span>
+                            <span>Categoría: <strong className="text-secondary">{ticket.categories?.name || 'General'}</strong></span>
                         </div>
                     </div>
 
@@ -282,32 +282,32 @@ function TicketDetailPage() {
                             Riesgo IA: {ticket.ai_risk_level || 'Pendiente'}
                         </span>
                         {isAgentOrAdmin ? (
-                            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-2.5 py-1">
-                                <label htmlFor="status-select" className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Estado</label>
+                            <div className="flex items-center gap-2 bg-elevated border border-border rounded-lg px-2.5 py-1">
+                                <label htmlFor="status-select" className="text-[10px] font-bold text-muted uppercase tracking-wider">Estado</label>
                                 <select
                                     id="status-select"
                                     value={ticket.status}
                                     disabled={updatingStatus}
                                     onChange={(e) => handleStatusChange(e.target.value)}
-                                    className="text-xs font-bold bg-transparent text-gray-700 border-none focus:outline-none focus:ring-0 cursor-pointer pr-1"
+                                    className="text-xs font-bold bg-transparent text-secondary border-none focus:outline-none focus:ring-0 cursor-pointer pr-1"
                                 >
                                     <option value="Open">Abierto</option>
                                     <option value="In Progress">En Proceso</option>
                                     <option value="Resolved">Resuelto</option>
                                 </select>
                                 {updatingStatus && (
-                                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600"></div>
+                                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-accent"></div>
                                 )}
                             </div>
                         ) : (
                             <span className={`px-3 py-1 text-xs font-bold rounded-full border ${
                                 ticket.status === 'Open'
-                                    ? 'bg-blue-50 text-blue-700 border-blue-100'
+                                    ? 'bg-accent-subtle text-accent border-accent/30'
                                     : ticket.status === 'In Progress'
-                                    ? 'bg-yellow-50 text-yellow-700 border-yellow-100'
-                                    : 'bg-green-50 text-green-700 border-green-100'
+                                    ? 'bg-warning-subtle text-warning border-warning/30'
+                                    : 'bg-success-subtle text-success border-success/30'
                             }`}>
-                                Estado: {ticket.status === 'Open' ? 'Abierto' : ticket.status === 'In Progress' ? 'En Proceso' : 'Resuelto'}
+                                {ticket.status === 'Open' ? 'Abierto' : ticket.status === 'In Progress' ? 'En Proceso' : 'Resuelto'}
                             </span>
                         )}
                     </div>
@@ -317,57 +317,57 @@ function TicketDetailPage() {
 
                     {/* Columna Izquierda: Información del Usuario */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Descripción del Reporte</h3>
-                            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{ticket.description}</p>
+                        <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
+                            <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">Descripción del Reporte</h3>
+                            <p className="text-secondary whitespace-pre-wrap leading-relaxed">{ticket.description}</p>
                         </div>
 
                         {/* Datos de contacto del creador */}
-                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Usuario Afectado</h3>
+                        <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
+                            <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">Usuario Afectado</h3>
                             <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold uppercase">
+                                <div className="h-10 w-10 rounded-full bg-elevated flex items-center justify-center text-secondary font-bold uppercase">
                                     {ticket.profiles?.full_name?.[0] || 'U'}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-semibold text-gray-900">{ticket.profiles?.full_name || 'Usuario del Sistema'}</p>
-                                    <p className="text-xs text-gray-500">{ticket.profiles?.email || 'Sin correo registrado'}</p>
+                                    <p className="text-sm font-semibold text-foreground">{ticket.profiles?.full_name || 'Usuario del Sistema'}</p>
+                                    <p className="text-xs text-muted">{ticket.profiles?.email || 'Sin correo registrado'}</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Agente Asignado */}
-                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Agente Asignado</h3>
+                        <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
+                            <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">Agente Asignado</h3>
                             {ticket.assignees ? (
                                 <div className="flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold uppercase">
+                                        <div className="h-10 w-10 rounded-full bg-accent-subtle flex items-center justify-center text-accent font-bold uppercase">
                                             {ticket.assignees.full_name?.[0] || 'A'}
                                         </div>
                                         <div>
-                                            <p className="text-sm font-semibold text-gray-900">{ticket.assignees.full_name || 'Agente de Soporte'}</p>
-                                            <p className="text-xs text-gray-500">{ticket.assignees.email || 'Sin correo registrado'}</p>
+                                            <p className="text-sm font-semibold text-foreground">{ticket.assignees.full_name || 'Agente de Soporte'}</p>
+                                            <p className="text-xs text-muted">{ticket.assignees.email || 'Sin correo registrado'}</p>
                                         </div>
                                     </div>
-                                    <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 border border-purple-100">
+                                    <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-accent-subtle text-accent border border-accent/30">
                                         {ticket.assignees.role === 'Admin' ? 'Administrador' : 'Agente'}
                                     </span>
                                 </div>
                             ) : (
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-gray-50 border border-dashed border-gray-200">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-elevated border border-dashed border-border">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-500">Este ticket no tiene un agente asignado todavía.</p>
-                                        <p className="text-xs text-gray-400 mt-0.5">Los agentes de soporte pueden tomar el control del caso.</p>
+                                        <p className="text-sm font-medium text-muted">Este ticket no tiene un agente asignado todavía.</p>
+                                        <p className="text-xs text-muted mt-0.5">Los agentes de soporte pueden tomar el control del caso.</p>
                                     </div>
                                     {isAgentOrAdmin && (
                                         <button
                                             onClick={handleClaimTicket}
                                             disabled={updatingAssignee}
-                                            className="inline-flex justify-center items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded-md shadow-sm transition-all disabled:bg-blue-400 whitespace-nowrap"
+                                            className="inline-flex justify-center items-center px-4 py-2 bg-accent hover:bg-accent-hover text-white font-medium text-xs rounded-lg shadow-sm transition-all disabled:bg-accent/50 whitespace-nowrap"
                                         >
                                             {updatingAssignee ? (
-                                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1.5 animate-infinite"></div>
+                                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1.5"></div>
                                             ) : null}
                                             Asignarme este Ticket
                                         </button>
@@ -377,12 +377,15 @@ function TicketDetailPage() {
                         </div>
 
                         {/* Conversación y Bitácora */}
-                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6">
-                            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-                                <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                                    <span>💬</span> Conversación y Historial
+                        <div className="bg-card p-6 rounded-xl border border-border shadow-sm space-y-6">
+                            <div className="flex items-center justify-between border-b border-border pb-4">
+                                <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-accent">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                                    </svg>
+                                    Conversación y Historial
                                 </h3>
-                                <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                                <span className="text-xs font-semibold text-muted bg-elevated px-2.5 py-0.5 rounded-full">
                                     {comments.length} {comments.length === 1 ? 'comentario' : 'comentarios'}
                                 </span>
                             </div>
@@ -391,10 +394,10 @@ function TicketDetailPage() {
                             <div className="space-y-4 max-h-[450px] overflow-y-auto pr-1">
                                 {loadingComments ? (
                                     <div className="flex justify-center items-center py-10">
-                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
                                     </div>
                                 ) : comments.length === 0 ? (
-                                    <div className="text-center py-10 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-100">
+                                    <div className="text-center py-10 text-muted bg-elevated rounded-lg border border-dashed border-border">
                                         <p className="text-sm">No hay mensajes en este ticket aún.</p>
                                         <p className="text-xs mt-0.5">Escribe un comentario abajo para iniciar la conversación.</p>
                                     </div>
@@ -406,39 +409,39 @@ function TicketDetailPage() {
                                                 key={comment.id}
                                                 className={`p-4 rounded-xl border transition-all ${
                                                     isAuthorSupport
-                                                        ? 'bg-purple-50/50 border-purple-100 ml-6 sm:ml-12'
-                                                        : 'bg-slate-50/50 border-slate-100 mr-6 sm:mr-12'
+                                                        ? 'bg-accent-subtle border-accent/20 ml-6 sm:ml-12'
+                                                        : 'bg-elevated border-border mr-6 sm:mr-12'
                                                 }`}
                                             >
                                                 <div className="flex items-start justify-between gap-3 mb-2">
                                                     <div className="flex items-center gap-2.5">
                                                         <div className={`h-7 w-7 rounded-full flex items-center justify-center font-bold text-xs uppercase ${
                                                             isAuthorSupport
-                                                                ? 'bg-purple-100 text-purple-700'
-                                                                : 'bg-blue-100 text-blue-700'
+                                                                ? 'bg-accent text-white'
+                                                                : 'bg-elevated text-secondary border border-border'
                                                         }`}>
                                                             {comment.profiles?.full_name?.[0] || 'U'}
                                                         </div>
                                                         <div>
-                                                            <span className="text-sm font-bold text-gray-800">
+                                                            <span className="text-sm font-bold text-foreground">
                                                                 {comment.profiles?.full_name || 'Usuario del Sistema'}
                                                             </span>
                                                             <span className={`ml-2 px-1.5 py-0.5 text-[9px] font-bold uppercase rounded ${
                                                                 comment.profiles?.role === 'Admin'
-                                                                    ? 'bg-purple-100 text-purple-800'
+                                                                    ? 'bg-accent-subtle text-accent'
                                                                     : comment.profiles?.role === 'Agent'
-                                                                    ? 'bg-purple-50 text-purple-700'
-                                                                    : 'bg-blue-50 text-blue-700'
+                                                                    ? 'bg-accent-subtle text-accent'
+                                                                    : 'bg-elevated text-muted'
                                                             }`}>
                                                                 {comment.profiles?.role === 'Admin' ? 'Admin' : comment.profiles?.role === 'Agent' ? 'Agente' : 'Cliente'}
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <span className="text-[10px] text-gray-400 font-medium">
+                                                    <span className="text-[10px] text-muted font-medium">
                                                         {new Date(comment.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                                     </span>
                                                 </div>
-                                                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed pl-9">
+                                                <p className="text-sm text-secondary whitespace-pre-wrap leading-relaxed pl-9">
                                                     {comment.content}
                                                 </p>
                                             </div>
@@ -448,9 +451,9 @@ function TicketDetailPage() {
                             </div>
 
                             {/* Formulario para agregar comentario */}
-                            <form onSubmit={handleSubmitComment} className="border-t border-gray-100 pt-4 space-y-3">
+                            <form onSubmit={handleSubmitComment} className="border-t border-border pt-4 space-y-3">
                                 <div>
-                                    <label htmlFor="comment-textarea" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                                    <label htmlFor="comment-textarea" className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
                                         Escribir un Comentario
                                     </label>
                                     <textarea
@@ -460,14 +463,14 @@ function TicketDetailPage() {
                                         onChange={(e) => setNewComment(e.target.value)}
                                         required
                                         placeholder="Escribe una respuesta, nota o aclaración..."
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800 placeholder-gray-400"
+                                        className="w-full px-3.5 py-2.5 border border-border bg-elevated rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent text-sm text-foreground placeholder-muted transition-all"
                                     />
                                 </div>
                                 <div className="flex justify-end">
                                     <button
                                         type="submit"
                                         disabled={submittingComment || !newComment.trim()}
-                                        className="inline-flex justify-center items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded-md shadow-sm transition-all disabled:bg-blue-400"
+                                        className="inline-flex justify-center items-center px-4 py-2 bg-accent hover:bg-accent-hover text-white font-medium text-xs rounded-lg shadow-sm transition-all disabled:bg-accent/50"
                                     >
                                         {submittingComment ? (
                                             <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white mr-1.5"></div>
@@ -481,19 +484,19 @@ function TicketDetailPage() {
 
                     {/* Columna Derecha: Diagnóstico Automatizado de la IA */}
                     <div className="space-y-6">
-                        <div className="bg-slate-900 text-slate-100 p-6 rounded-xl shadow-md border border-slate-800 relative overflow-hidden">
-                            {/* Detalle estético de fondo */}
-                            <div className="absolute top-0 right-0 p-3 text-slate-800 opacity-20 font-mono text-xs select-none">GEMINI_CORE</div>
+                        <div className="bg-elevated text-foreground p-6 rounded-xl shadow-sm border border-border relative overflow-hidden">
 
                             <div className="flex items-center justify-between mb-4 gap-2">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-xl">🧠</span>
-                                    <h2 className="text-md font-bold tracking-tight text-white">Análisis de Automatización IA</h2>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-accent">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+                                    </svg>
+                                    <h2 className="text-md font-bold tracking-tight text-foreground">Análisis de IA</h2>
                                 </div>
                                 {isAgentOrAdmin && !isEditingAI && (
                                     <button
                                         onClick={handleStartEditAI}
-                                        className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1 bg-slate-800/60 hover:bg-slate-850 px-2 py-1 rounded border border-slate-800/80"
+                                        className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors flex items-center gap-1 bg-card hover:bg-elevated px-2 py-1 rounded border border-border"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
@@ -503,29 +506,29 @@ function TicketDetailPage() {
                                 )}
                             </div>
 
-                            <hr className="border-slate-800 mb-4" />
+                            <hr className="border-border mb-4" />
 
                             {isEditingAI ? (
                                 <div className="space-y-4 text-xs">
                                     <div>
-                                        <label htmlFor="edit-classification" className="block font-semibold text-blue-400 uppercase tracking-wider mb-1">Clasificación Técnica</label>
+                                        <label htmlFor="edit-classification" className="block font-semibold text-accent uppercase tracking-wider mb-1">Clasificación Técnica</label>
                                         <input
                                             id="edit-classification"
                                             type="text"
                                             value={editClassification}
                                             onChange={(e) => setEditClassification(e.target.value)}
-                                            className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
+                                            className="w-full bg-card border border-border rounded px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent text-xs placeholder-muted"
                                             placeholder="Ej. Network, Hardware, Software"
                                         />
                                     </div>
 
                                     <div>
-                                        <label htmlFor="edit-risk-level" className="block font-semibold text-blue-400 uppercase tracking-wider mb-1">Nivel de Riesgo</label>
+                                        <label htmlFor="edit-risk-level" className="block font-semibold text-accent uppercase tracking-wider mb-1">Nivel de Riesgo</label>
                                         <select
                                             id="edit-risk-level"
                                             value={editRiskLevel}
                                             onChange={(e) => setEditRiskLevel(e.target.value)}
-                                            className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
+                                            className="w-full bg-card border border-border rounded px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent text-xs"
                                         >
                                             <option value="Low">Low (Bajo)</option>
                                             <option value="Medium">Medium (Medio)</option>
@@ -535,34 +538,34 @@ function TicketDetailPage() {
                                     </div>
 
                                     <div>
-                                        <label htmlFor="edit-summary" className="block font-semibold text-blue-400 uppercase tracking-wider mb-1">Resumen de Diagnóstico</label>
+                                        <label htmlFor="edit-summary" className="block font-semibold text-accent uppercase tracking-wider mb-1">Resumen de Diagnóstico</label>
                                         <textarea
                                             id="edit-summary"
                                             rows={3}
                                             value={editSummary}
                                             onChange={(e) => setEditSummary(e.target.value)}
-                                            className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs leading-relaxed"
+                                            className="w-full bg-card border border-border rounded px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent text-xs leading-relaxed placeholder-muted"
                                             placeholder="Resumen del problema..."
                                         />
                                     </div>
 
                                     <div>
-                                        <label htmlFor="edit-suggestions" className="block font-semibold text-blue-400 uppercase tracking-wider mb-1">Sugerencias de Resolución (Playbook)</label>
+                                        <label htmlFor="edit-suggestions" className="block font-semibold text-accent uppercase tracking-wider mb-1">Sugerencias de Resolución (Playbook)</label>
                                         <textarea
                                             id="edit-suggestions"
                                             rows={5}
                                             value={editSuggestions}
                                             onChange={(e) => setEditSuggestions(e.target.value)}
-                                            className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs leading-relaxed font-mono"
+                                            className="w-full bg-card border border-border rounded px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent text-xs leading-relaxed font-mono placeholder-muted"
                                             placeholder="Sugerencias paso a paso..."
                                         />
                                     </div>
 
-                                    <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                                    <div className="flex justify-end gap-2 pt-2 border-t border-border">
                                         <button
                                             type="button"
                                             onClick={() => setIsEditingAI(false)}
-                                            className="px-3 py-1.5 rounded text-xs font-semibold text-slate-400 hover:text-slate-300 transition-colors"
+                                            className="px-3 py-1.5 rounded text-xs font-semibold text-muted hover:text-secondary transition-colors"
                                         >
                                             Cancelar
                                         </button>
@@ -570,7 +573,7 @@ function TicketDetailPage() {
                                             type="button"
                                             disabled={savingAI}
                                             onClick={handleSaveAI}
-                                            className="px-3 py-1.5 rounded text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all flex items-center gap-1 disabled:bg-blue-400"
+                                            className="px-3 py-1.5 rounded text-xs font-semibold bg-accent hover:bg-accent-hover text-white transition-all flex items-center gap-1 disabled:bg-accent/50"
                                         >
                                             {savingAI && (
                                                 <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
@@ -582,18 +585,18 @@ function TicketDetailPage() {
                             ) : (
                                 <div className="space-y-4 text-sm">
                                     <div>
-                                        <h4 className="text-xs font-semibold text-blue-400 uppercase tracking-wider">Clasificación Técnica</h4>
-                                        <p className="mt-1 font-medium text-slate-200">{ticket.ai_classification || 'No clasificado'}</p>
+                                        <h4 className="text-xs font-semibold text-accent uppercase tracking-wider">Clasificación Técnica</h4>
+                                        <p className="mt-1 font-medium text-foreground">{ticket.ai_classification || 'No clasificado'}</p>
                                     </div>
 
                                     <div>
-                                        <h4 className="text-xs font-semibold text-blue-400 uppercase tracking-wider">Resumen de Diagnóstico</h4>
-                                        <p className="mt-1 text-slate-300 leading-relaxed text-xs">{ticket.ai_summary || 'Sin resumen analítico disponible.'}</p>
+                                        <h4 className="text-xs font-semibold text-accent uppercase tracking-wider">Resumen de Diagnóstico</h4>
+                                        <p className="mt-1 text-secondary leading-relaxed text-xs">{ticket.ai_summary || 'Sin resumen analítico disponible.'}</p>
                                     </div>
 
                                     <div>
-                                        <h4 className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-1.5">Sugerencias de Resolución (Playbook)</h4>
-                                        <p className="text-slate-300 whitespace-pre-wrap leading-relaxed text-xs bg-slate-950/50 p-3 rounded-lg border border-slate-800/80">
+                                        <h4 className="text-xs font-semibold text-accent uppercase tracking-wider mb-1.5">Sugerencias de Resolución (Playbook)</h4>
+                                        <p className="text-secondary whitespace-pre-wrap leading-relaxed text-xs bg-card/50 p-3 rounded-lg border border-border">
                                             {ticket.ai_suggestions || 'No se generaron recomendaciones automáticas.'}
                                         </p>
                                     </div>

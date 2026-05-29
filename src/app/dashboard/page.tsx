@@ -97,18 +97,18 @@ function DashboardPage() {
     // Funciones helper para pintar los badges de colores según la IA
     const getRiskColor = (level: string) => {
         switch (level?.toLowerCase()) {
-            case 'critical': return 'bg-red-100 text-red-800 border-red-200';
-            case 'high': return 'bg-orange-100 text-orange-800 border-orange-200';
-            case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            case 'low': return 'bg-green-100 text-green-800 border-green-200';
-            default: return 'bg-gray-100 text-gray-800 border-gray-200';
+            case 'critical': return 'bg-critical-subtle text-critical border-critical/30';
+            case 'high': return 'bg-high-subtle text-high border-high/30';
+            case 'medium': return 'bg-medium-subtle text-medium border-medium/30';
+            case 'low': return 'bg-low-subtle text-low border-low/30';
+            default: return 'bg-elevated text-muted border-border';
         }
     };
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="flex justify-center items-center min-h-screen bg-surface">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
             </div>
         );
     }
@@ -129,24 +129,24 @@ function DashboardPage() {
     const isAgentOrAdmin = role === 'Admin' || role === 'Agent';
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6 sm:p-10 text-gray-900">
+        <div className="min-h-screen bg-surface p-6 sm:p-10 text-foreground">
             <div className="max-w-7xl mx-auto">
 
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
                     <div>
                         <div className="flex items-center gap-2.5">
-                            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Panel de Soporte</h1>
+                            <h1 className="text-3xl font-bold text-foreground tracking-tight">Panel de Soporte</h1>
                             {role && (
                                 <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full border ${isAgentOrAdmin
-                                        ? 'bg-purple-100 text-purple-800 border-purple-200'
-                                        : 'bg-blue-100 text-blue-800 border-blue-200'
+                                        ? 'bg-accent-subtle text-accent border-accent/30'
+                                        : 'bg-accent-subtle text-accent border-accent/30'
                                     }`}>
-                                    Vista de {role === 'Admin' ? 'Administrador' : role === 'Agent' ? 'Agente' : 'Cliente'}
+                                    {role === 'Admin' ? 'Administrador' : role === 'Agent' ? 'Agente' : 'Cliente'}
                                 </span>
                             )}
                         </div>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-muted mt-1">
                             {isAgentOrAdmin
                                 ? 'Monitorea todos los incidentes reportados en el sistema y el análisis de IA.'
                                 : 'Monitorea tus incidentes y el análisis automatizado por IA.'
@@ -156,29 +156,29 @@ function DashboardPage() {
                     <div className="flex items-center gap-3">
                         <Link
                             href="/user/tickets/new"
-                            className="inline-flex justify-center items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-md shadow-sm transition-all text-center"
+                            className="inline-flex justify-center items-center px-4 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium text-sm rounded-lg shadow-lg shadow-accent/20 transition-all text-center"
                         >
                             + Crear Nuevo Ticket
                         </Link>
 
                         {/* User info + logout */}
-                        <div className="flex items-center gap-2 pl-3 border-l border-gray-200">
+                        <div className="flex items-center gap-2 pl-3 border-l border-border">
                             {/* Avatar with initials */}
                             <div
-                                className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold select-none"
+                                className="flex-shrink-0 w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white text-xs font-bold select-none"
                                 title={userName || ''}
                             >
                                 {userName
                                     ? userName.trim().split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
                                     : '?'}
                             </div>
-                            <span className="text-sm font-medium text-gray-700 max-w-[120px] truncate hidden sm:block">
+                            <span className="text-sm font-medium text-secondary max-w-[120px] truncate hidden sm:block">
                                 {userName}
                             </span>
                             <button
                                 onClick={handleSignOut}
                                 title="Cerrar Sesión"
-                                className="inline-flex justify-center items-center px-3 py-2 bg-white hover:bg-red-50 text-gray-500 hover:text-red-600 border border-gray-200 hover:border-red-200 font-medium text-sm rounded-md shadow-sm transition-all"
+                                className="inline-flex justify-center items-center px-3 py-2 bg-card hover:bg-danger-subtle text-muted hover:text-danger border border-border hover:border-danger/30 font-medium text-sm rounded-lg transition-all"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
@@ -191,37 +191,37 @@ function DashboardPage() {
 
                 {/* Tarjetas de Métricas */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                        <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">Total Reportados</p>
-                        <p className="text-3xl font-bold text-gray-800 mt-2">{metrics.total}</p>
+                    <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
+                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">Total Reportados</p>
+                        <p className="text-3xl font-bold text-foreground mt-2">{metrics.total}</p>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm border-l-4 border-l-blue-500">
-                        <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">En Proceso (Abiertos)</p>
-                        <p className="text-3xl font-bold text-blue-600 mt-2">{metrics.open}</p>
+                    <div className="bg-card p-6 rounded-xl border border-border shadow-sm border-l-[3px] border-l-accent">
+                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">En Proceso (Abiertos)</p>
+                        <p className="text-3xl font-bold text-accent mt-2">{metrics.open}</p>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm border-l-4 border-l-green-500">
-                        <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">Resueltos</p>
-                        <p className="text-3xl font-bold text-green-600 mt-2">{metrics.resolved}</p>
+                    <div className="bg-card p-6 rounded-xl border border-border shadow-sm border-l-[3px] border-l-success">
+                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">Resueltos</p>
+                        <p className="text-3xl font-bold text-success mt-2">{metrics.resolved}</p>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm border-l-4 border-l-red-500">
-                        <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">Prioridad Crítica / Alta (IA)</p>
-                        <p className="text-3xl font-bold text-red-600 mt-2">{metrics.critical}</p>
+                    <div className="bg-card p-6 rounded-xl border border-border shadow-sm border-l-[3px] border-l-danger">
+                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">Prioridad Crítica / Alta (IA)</p>
+                        <p className="text-3xl font-bold text-danger mt-2">{metrics.critical}</p>
                     </div>
                 </div>
 
                 {/* Tabla de Tickets */}
-                <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <h2 className="text-lg font-bold text-gray-800">Historial de Incidentes</h2>
+                <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                    <div className="px-6 py-5 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <h2 className="text-lg font-bold text-foreground">Historial de Incidentes</h2>
 
                         {/* Filtros */}
                         <div className="flex flex-wrap items-center gap-4">
                             <div className="flex items-center gap-2">
-                                <label className="text-xs text-gray-400 font-semibold uppercase">Estado:</label>
+                                <label className="text-xs text-muted font-semibold uppercase">Estado:</label>
                                 <select
                                     value={filterStatus}
                                     onChange={(e) => setFilterStatus(e.target.value)}
-                                    className="px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-md text-xs font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="px-2.5 py-1.5 bg-elevated border border-border rounded-lg text-xs font-medium text-secondary focus:outline-none focus:ring-1 focus:ring-accent"
                                 >
                                     <option value="All">Todos</option>
                                     <option value="Open">Abiertos</option>
@@ -229,11 +229,11 @@ function DashboardPage() {
                                 </select>
                             </div>
                             <div className="flex items-center gap-2">
-                                <label className="text-xs text-gray-400 font-semibold uppercase">Prioridad:</label>
+                                <label className="text-xs text-muted font-semibold uppercase">Prioridad:</label>
                                 <select
                                     value={filterPriority}
                                     onChange={(e) => setFilterPriority(e.target.value)}
-                                    className="px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-md text-xs font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="px-2.5 py-1.5 bg-elevated border border-border rounded-lg text-xs font-medium text-secondary focus:outline-none focus:ring-1 focus:ring-accent"
                                 >
                                     <option value="All">Todas</option>
                                     <option value="Urgent">Urgente (IA)</option>
@@ -244,7 +244,7 @@ function DashboardPage() {
                     </div>
 
                     {filteredTickets.length === 0 ? (
-                        <div className="p-10 text-center text-gray-400">
+                        <div className="p-10 text-center text-muted">
                             {tickets.length === 0
                                 ? (isAgentOrAdmin ? 'No hay ningún ticket registrado en el sistema.' : 'No tienes ningún ticket registrado. ¡Crea uno nuevo para ver el análisis de IA!')
                                 : 'No se encontraron tickets con los filtros seleccionados.'
@@ -254,7 +254,7 @@ function DashboardPage() {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-gray-50 text-gray-400 uppercase text-xs font-semibold tracking-wider border-b border-gray-100">
+                                    <tr className="bg-elevated text-muted uppercase text-xs font-semibold tracking-wider border-b border-border">
                                         <th className="px-6 py-4">Incidente</th>
                                         {isAgentOrAdmin && (
                                             <th className="px-6 py-4">Reportero</th>
@@ -266,25 +266,25 @@ function DashboardPage() {
                                         <th className="px-6 py-4 text-right">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100 text-sm text-gray-700">
+                                <tbody className="divide-y divide-border text-sm text-secondary">
                                     {filteredTickets.map((ticket) => (
-                                        <tr key={ticket.id} className="hover:bg-gray-50/70 transition-colors">
+                                        <tr key={ticket.id} className="hover:bg-elevated/50 transition-colors">
                                             <td className="px-6 py-4 max-w-xs">
-                                                <div className="font-semibold text-gray-900 truncate">{ticket.title}</div>
-                                                <div className="text-xs text-gray-400 mt-0.5">
+                                                <div className="font-semibold text-foreground truncate">{ticket.title}</div>
+                                                <div className="text-xs text-muted mt-0.5">
                                                     {new Date(ticket.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
                                                 </div>
                                             </td>
                                             {isAgentOrAdmin && (
                                                 <td className="px-6 py-4">
-                                                    <div className="font-medium text-gray-900 truncate max-w-[150px]">{ticket.profiles?.full_name || 'Desconocido'}</div>
-                                                    <div className="text-xs text-gray-400 truncate max-w-[150px]">{ticket.profiles?.email || ''}</div>
+                                                    <div className="font-medium text-foreground truncate max-w-[150px]">{ticket.profiles?.full_name || 'Desconocido'}</div>
+                                                    <div className="text-xs text-muted truncate max-w-[150px]">{ticket.profiles?.email || ''}</div>
                                                 </td>
                                             )}
-                                            <td className="px-6 py-4 text-gray-500">
+                                            <td className="px-6 py-4 text-secondary">
                                                 {ticket.categories?.name || 'Sin categoría'}
                                             </td>
-                                            <td className="px-6 py-4 text-gray-600 italic font-medium">
+                                            <td className="px-6 py-4 text-secondary italic font-medium">
                                                 {ticket.ai_classification || 'Procesando...'}
                                             </td>
                                             <td className="px-6 py-4">
@@ -293,17 +293,20 @@ function DashboardPage() {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`inline-flex items-center text-xs font-medium ${ticket.status === 'Open' ? 'text-blue-600' : 'text-gray-400'}`}>
-                                                    <span className={`h-1.5 w-1.5 rounded-full mr-1.5 ${ticket.status === 'Open' ? 'bg-blue-600 animate-pulse' : 'bg-gray-400'}`}></span>
+                                                <span className={`inline-flex items-center text-xs font-medium ${ticket.status === 'Open' ? 'text-accent' : 'text-muted'}`}>
+                                                    <span className={`h-1.5 w-1.5 rounded-full mr-1.5 ${ticket.status === 'Open' ? 'bg-accent animate-pulse' : 'bg-muted'}`}></span>
                                                     {ticket.status === 'Open' ? 'Abierto' : 'Resuelto'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <Link
                                                     href={`/user/tickets/${ticket.id}`}
-                                                    className="text-blue-600 hover:text-blue-800 font-medium hover:underline text-xs"
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-accent/30 text-accent hover:bg-accent hover:text-white hover:border-accent transition-all"
                                                 >
-                                                    Ver Detalle →
+                                                    Ver Detalle
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                                    </svg>
                                                 </Link>
                                             </td>
                                         </tr>
