@@ -6,18 +6,11 @@ export async function proxy(request: NextRequest) {
         request,
     })
 
-    // If there are no Supabase auth cookies, skip server-side auth refresh to avoid hanging
-    const hasAuthCookie = request.cookies.get('sb-access-token') || request.cookies.get('sb-refresh-token');
-    if (!hasAuthCookie) {
-        return response;
-    }
-
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
             cookies: {
-                // ✅ New API – correct shape
                 getAll() {
                     return request.cookies.getAll();
                 },
@@ -30,16 +23,14 @@ export async function proxy(request: NextRequest) {
         }
     );
 
-
     try {
-        // Attempt to refresh and validate session
         await supabase.auth.getUser();
     } catch (error) {
-        // On error (e.g., stale/invalid cookies), clear Supabase auth cookies to avoid hangs
-        request.cookies.getAll().forEach(({ name }) => {
+        const sbCookies = request.cookies.getAll().filter(c => c.name.startsWith('sb-'));
+        sbCookies.forEach(({ name }) => {
             response.cookies.delete(name);
         });
-        console.error('Supabase auth error in proxy, cleared cookies:', error);
+        console.error('Supabase auth error in proxy, cleared cookies:', error, 'Request cookies:', request.cookies.getAll());
     }
 
     return response;
