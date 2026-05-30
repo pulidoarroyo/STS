@@ -48,6 +48,14 @@ export async function analyzeTicketWithAI(
 
         // Parse the structural JSON payload
         const parsedData: AIAnaLysisResult = JSON.parse(rawResponseText);
+
+        // Normalize suggestions: AI sometimes returns a JSON array instead of a plain string
+        if (Array.isArray((parsedData as any).suggestions)) {
+            parsedData.suggestions = ((parsedData as any).suggestions as string[])
+                .map((s) => `- ${s}`)
+                .join('\n');
+        }
+
         const latencyMs = Date.now() - startTime;
 
         // Log tracking metrics to your database table

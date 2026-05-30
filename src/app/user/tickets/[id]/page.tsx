@@ -227,6 +227,28 @@ function TicketDetailPage() {
         fetchComments();
     }, [id]);
 
+    const parseSuggestions = (raw: string | null) => {
+        if (!raw) return <span className="text-muted">No se generaron recomendaciones automáticas.</span>;
+        try {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+                return (
+                    <ul className="space-y-1.5 list-none">
+                        {parsed.map((item: string, i: number) => (
+                            <li key={i} className="flex items-start gap-2">
+                                <span className="mt-0.5 text-accent font-bold flex-shrink-0">–</span>
+                                <span>{item}</span>
+                            </li>
+                        ))}
+                    </ul>
+                );
+            }
+        } catch {
+            // not JSON, fall through to plain text
+        }
+        return <span className="whitespace-pre-wrap">{raw}</span>;
+    };
+
     const getRiskBadge = (level: string) => {
         switch (level?.toLowerCase()) {
             case 'critical': return 'bg-critical-subtle text-critical border-critical/30';
@@ -596,9 +618,9 @@ function TicketDetailPage() {
 
                                     <div>
                                         <h4 className="text-xs font-semibold text-accent uppercase tracking-wider mb-1.5">Sugerencias de Resolución (Playbook)</h4>
-                                        <p className="text-secondary whitespace-pre-wrap leading-relaxed text-xs bg-card/50 p-3 rounded-lg border border-border">
-                                            {ticket.ai_suggestions || 'No se generaron recomendaciones automáticas.'}
-                                        </p>
+                                        <div className="text-secondary leading-relaxed text-xs bg-card/50 p-3 rounded-lg border border-border">
+                                            {parseSuggestions(ticket.ai_suggestions)}
+                                        </div>
                                     </div>
                                 </div>
                             )}
