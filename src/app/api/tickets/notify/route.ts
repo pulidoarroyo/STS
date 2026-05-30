@@ -43,7 +43,7 @@ export async function POST(request: Request) {
                 is_critical: ai.is_critical === true || ai.risk_level?.toLowerCase() === 'critical',
             },
             meta: {
-                source: 'stickets-api',
+                source: 'navi-api',
                 dispatched_at: new Date().toISOString(),
             },
         };

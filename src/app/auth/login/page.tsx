@@ -96,16 +96,24 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-surface py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8 p-8 bg-card rounded-xl shadow-lg border border-border">
                 <div className="text-center">
-                    <div className="mx-auto h-12 w-12 rounded-full bg-accent-subtle flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-accent">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                        </svg>
+                    {/* Navi Wordmark */}
+                    <div className="inline-flex items-center gap-3 mb-6">
+                        <div className="h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{ background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="white" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                            </svg>
+                        </div>
+                        <span className="text-2xl font-bold tracking-tight"
+                            style={{ background: 'linear-gradient(90deg, #818cf8 0%, #c7d2fe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                            Navi
+                        </span>
                     </div>
-                    <h2 className="mt-4 text-3xl font-bold text-foreground tracking-tight">
-                        Iniciar Sesión
+                    <h2 className="text-2xl font-bold text-foreground tracking-tight">
+                        Welcome back
                     </h2>
-                    <p className="mt-2 text-sm text-secondary">
-                        Ingresa a tu panel de control de soporte
+                    <p className="mt-1.5 text-sm text-muted">
+                        AI-powered support operations for modern teams
                     </p>
                 </div>
 

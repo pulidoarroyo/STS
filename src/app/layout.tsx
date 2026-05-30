@@ -13,8 +13,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "STickets - Sistema de Tickets de Soporte",
-  description: "Sistema de gestión de tickets de soporte técnico con análisis automatizado por IA",
+  title: "Navi — AI-Powered Support Desk",
+  description: "Intelligent ticket management and AI triage for modern support teams.",
 };
 
 export default function RootLayout({

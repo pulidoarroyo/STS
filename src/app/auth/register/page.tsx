@@ -81,16 +81,24 @@ export default function RegisterPage() {
         <div className="min-h-screen flex items-center justify-center bg-surface py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8 p-8 bg-card rounded-xl shadow-lg border border-border">
                 <div className="text-center">
-                    <div className="mx-auto h-12 w-12 rounded-full bg-accent-subtle flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-accent">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
-                        </svg>
+                    {/* Navi Wordmark */}
+                    <div className="inline-flex items-center gap-3 mb-6">
+                        <div className="h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{ background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="white" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                            </svg>
+                        </div>
+                        <span className="text-2xl font-bold tracking-tight"
+                            style={{ background: 'linear-gradient(90deg, #818cf8 0%, #c7d2fe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                            Navi
+                        </span>
                     </div>
-                    <h2 className="mt-4 text-3xl font-bold text-foreground tracking-tight">
-                        Crear una cuenta nueva
+                    <h2 className="text-2xl font-bold text-foreground tracking-tight">
+                        Create your account
                     </h2>
-                    <p className="mt-2 text-sm text-secondary">
-                        Sistema de Tickets de Soporte Técnico
+                    <p className="mt-1.5 text-sm text-muted">
+                        Join your team's support workspace
                     </p>
                 </div>
 
