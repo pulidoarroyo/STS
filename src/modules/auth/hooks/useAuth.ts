@@ -14,7 +14,6 @@ export function useAuth() {
                 if (session) {
                     setUser(session.user);
                     await fetchProfile(session.user.id);
-                    setLoading(false);
                 }
             } catch (err) {
                 console.error('Error getting initial session:', err);
@@ -35,11 +34,9 @@ export function useAuth() {
                     } else {
                         setUser(null);
                         setProfile(null);
-                        setLoading(false);
                     }
                 } catch (err) {
                     console.error('Error handling auth state change:', err);
-                    setLoading(false);
                 } finally {
                     setLoading(false);
                 }
