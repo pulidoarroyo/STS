@@ -43,7 +43,6 @@ function DashboardPage() {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) return;
 
-                // Fetch user role and name from profiles
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('role, full_name')
@@ -53,9 +52,8 @@ function DashboardPage() {
                 if (profileError) throw profileError;
                 const userRole = profile?.role || 'User';
                 setRole(userRole);
-                setUserName(profile?.full_name || user.email || 'Usuario');
+                setUserName(profile?.full_name || user.email || 'User');
 
-                // Fetch tickets based on role (Admins/Agents see all, standard users see only their own)
                 let query = supabase
                     .from('tickets')
                     .select(`
@@ -76,7 +74,6 @@ function DashboardPage() {
                     const formattedTickets = data as any[];
                     setTickets(formattedTickets);
 
-                    // Calcular métricas rápidas para las tarjetas
                     const total = formattedTickets.length;
                     const open = formattedTickets.filter(t => t.status === 'Open').length;
                     const resolved = formattedTickets.filter(t => t.status === 'Resolved').length;
@@ -94,7 +91,6 @@ function DashboardPage() {
         fetchDashboardData();
     }, []);
 
-    // Funciones helper para pintar los badges de colores según la IA
     const getRiskColor = (level: string) => {
         switch (level?.toLowerCase()) {
             case 'critical': return 'bg-critical-subtle text-critical border-critical/30';
@@ -114,11 +110,9 @@ function DashboardPage() {
     }
 
     const filteredTickets = tickets.filter(ticket => {
-        // Status filter
         if (filterStatus === 'Open' && ticket.status !== 'Open') return false;
         if (filterStatus === 'Resolved' && ticket.status !== 'Resolved') return false;
 
-        // Priority filter
         const isUrgent = ticket.ai_risk_level?.toLowerCase() === 'critical' || ticket.ai_risk_level?.toLowerCase() === 'high';
         if (filterPriority === 'Urgent' && !isUrgent) return false;
         if (filterPriority === 'Normal' && isUrgent) return false;
@@ -152,14 +146,14 @@ function DashboardPage() {
                                     ? 'bg-accent-subtle text-accent border-accent/30'
                                     : 'bg-accent-subtle text-accent border-accent/30'
                                     }`}>
-                                    {role === 'Admin' ? 'Administrador' : role === 'Agent' ? 'Agente' : 'Cliente'}
+                                    {role === 'Admin' ? 'Admin' : role === 'Agent' ? 'Agent' : 'Client'}
                                 </span>
                             )}
                         </div>
                         <p className="text-sm text-muted mt-1">
                             {isAgentOrAdmin
-                                ? 'Monitorea todos los incidentes reportados en el sistema y el análisis de IA.'
-                                : 'Monitorea tus incidentes y el análisis automatizado por IA.'
+                                ? 'Monitor all incidents reported in the system and the AI analysis.'
+                                : 'Monitor your incidents and automated AI analysis.'
                             }
                         </p>
                     </div>
@@ -168,7 +162,7 @@ function DashboardPage() {
                             href="/user/tickets/new"
                             className="inline-flex justify-center items-center px-4 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium text-sm rounded-lg shadow-lg shadow-accent/20 transition-all text-center"
                         >
-                            + Crear Nuevo Ticket
+                            + Create New Ticket
                         </Link>
 
                         {/* User info + logout */}
@@ -187,66 +181,66 @@ function DashboardPage() {
                             </span>
                             <button
                                 onClick={handleSignOut}
-                                title="Cerrar Sesión"
+                                title="Sign Out"
                                 className="inline-flex justify-center items-center px-3 py-2 bg-card hover:bg-danger-subtle text-muted hover:text-danger border border-border hover:border-danger/30 font-medium text-sm rounded-lg transition-all"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                                 </svg>
-                                <span className="ml-2 hidden sm:inline">Cerrar Sesión</span>
+                                <span className="ml-2 hidden sm:inline">Sign Out</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Tarjetas de Métricas */}
+                {/* Metrics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
                     <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
-                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">Total Reportados</p>
+                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">Total Reported</p>
                         <p className="text-3xl font-bold text-foreground mt-2">{metrics.total}</p>
                     </div>
                     <div className="bg-card p-6 rounded-xl border border-border shadow-sm border-l-[3px] border-l-accent">
-                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">En Proceso (Abiertos)</p>
+                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">In Progress (Open)</p>
                         <p className="text-3xl font-bold text-accent mt-2">{metrics.open}</p>
                     </div>
                     <div className="bg-card p-6 rounded-xl border border-border shadow-sm border-l-[3px] border-l-success">
-                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">Resueltos</p>
+                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">Resolved</p>
                         <p className="text-3xl font-bold text-success mt-2">{metrics.resolved}</p>
                     </div>
                     <div className="bg-card p-6 rounded-xl border border-border shadow-sm border-l-[3px] border-l-danger">
-                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">Prioridad Crítica / Alta (IA)</p>
+                        <p className="text-xs font-semibold text-muted uppercase tracking-wider">Critical / High Priority (AI)</p>
                         <p className="text-3xl font-bold text-danger mt-2">{metrics.critical}</p>
                     </div>
                 </div>
 
-                {/* Tabla de Tickets */}
+                {/* Tickets Table */}
                 <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
                     <div className="px-6 py-5 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <h2 className="text-lg font-bold text-foreground">Historial de Incidentes</h2>
+                        <h2 className="text-lg font-bold text-foreground">Incident History</h2>
 
-                        {/* Filtros */}
+                        {/* Filters */}
                         <div className="flex flex-wrap items-center gap-4">
                             <div className="flex items-center gap-2">
-                                <label className="text-xs text-muted font-semibold uppercase">Estado:</label>
+                                <label className="text-xs text-muted font-semibold uppercase">Status:</label>
                                 <select
                                     value={filterStatus}
                                     onChange={(e) => setFilterStatus(e.target.value)}
                                     className="px-2.5 py-1.5 bg-elevated border border-border rounded-lg text-xs font-medium text-secondary focus:outline-none focus:ring-1 focus:ring-accent"
                                 >
-                                    <option value="All">Todos</option>
-                                    <option value="Open">Abiertos</option>
-                                    <option value="Resolved">Resueltos</option>
+                                    <option value="All">All</option>
+                                    <option value="Open">Open</option>
+                                    <option value="Resolved">Resolved</option>
                                 </select>
                             </div>
                             <div className="flex items-center gap-2">
-                                <label className="text-xs text-muted font-semibold uppercase">Prioridad:</label>
+                                <label className="text-xs text-muted font-semibold uppercase">Priority:</label>
                                 <select
                                     value={filterPriority}
                                     onChange={(e) => setFilterPriority(e.target.value)}
                                     className="px-2.5 py-1.5 bg-elevated border border-border rounded-lg text-xs font-medium text-secondary focus:outline-none focus:ring-1 focus:ring-accent"
                                 >
-                                    <option value="All">Todas</option>
-                                    <option value="Urgent">Urgente (IA)</option>
+                                    <option value="All">All</option>
+                                    <option value="Urgent">Urgent (AI)</option>
                                     <option value="Normal">Normal</option>
                                 </select>
                             </div>
@@ -256,8 +250,8 @@ function DashboardPage() {
                     {filteredTickets.length === 0 ? (
                         <div className="p-10 text-center text-muted">
                             {tickets.length === 0
-                                ? (isAgentOrAdmin ? 'No hay ningún ticket registrado en el sistema.' : 'No tienes ningún ticket registrado. ¡Crea uno nuevo para ver el análisis de IA!')
-                                : 'No se encontraron tickets con los filtros seleccionados.'
+                                ? (isAgentOrAdmin ? 'No tickets registered in the system.' : 'You have no tickets registered. Create a new one to see the AI analysis!')
+                                : 'No tickets found with the selected filters.'
                             }
                         </div>
                     ) : (
@@ -265,15 +259,15 @@ function DashboardPage() {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="bg-elevated text-muted uppercase text-xs font-semibold tracking-wider border-b border-border">
-                                        <th className="px-6 py-4">Incidente</th>
+                                        <th className="px-6 py-4">Incident</th>
                                         {isAgentOrAdmin && (
-                                            <th className="px-6 py-4">Reportero</th>
+                                            <th className="px-6 py-4">Reporter</th>
                                         )}
-                                        <th className="px-6 py-4">Categoría Original</th>
-                                        <th className="px-6 py-4">Clasificación IA</th>
-                                        <th className="px-6 py-4">Riesgo (IA)</th>
-                                        <th className="px-6 py-4">Estado</th>
-                                        <th className="px-6 py-4 text-right">Acciones</th>
+                                        <th className="px-6 py-4">Original Category</th>
+                                        <th className="px-6 py-4">AI Classification</th>
+                                        <th className="px-6 py-4">Risk (AI)</th>
+                                        <th className="px-6 py-4">Status</th>
+                                        <th className="px-6 py-4 text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border text-sm text-secondary">
@@ -282,30 +276,30 @@ function DashboardPage() {
                                             <td className="px-6 py-4 max-w-xs">
                                                 <div className="font-semibold text-foreground truncate">{ticket.title}</div>
                                                 <div className="text-xs text-muted mt-0.5">
-                                                    {new Date(ticket.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                                                    {new Date(ticket.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
                                                 </div>
                                             </td>
                                             {isAgentOrAdmin && (
                                                 <td className="px-6 py-4">
-                                                    <div className="font-medium text-foreground truncate max-w-[150px]">{ticket.profiles?.full_name || 'Desconocido'}</div>
+                                                    <div className="font-medium text-foreground truncate max-w-[150px]">{ticket.profiles?.full_name || 'Unknown'}</div>
                                                     <div className="text-xs text-muted truncate max-w-[150px]">{ticket.profiles?.email || ''}</div>
                                                 </td>
                                             )}
                                             <td className="px-6 py-4 text-secondary">
-                                                {ticket.categories?.name || 'Sin categoría'}
+                                                {ticket.categories?.name || 'Uncategorized'}
                                             </td>
                                             <td className="px-6 py-4 text-secondary italic font-medium">
-                                                {ticket.ai_classification || 'Procesando...'}
+                                                {ticket.ai_classification || 'Processing...'}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`px-2.5 py-1 text-xs font-semibold rounded-full border ${getRiskColor(ticket.ai_risk_level)}`}>
-                                                    {ticket.ai_risk_level || 'Pendiente'}
+                                                    {ticket.ai_risk_level || 'Pending'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center text-xs font-medium ${ticket.status === 'Open' ? 'text-accent' : 'text-muted'}`}>
                                                     <span className={`h-1.5 w-1.5 rounded-full mr-1.5 ${ticket.status === 'Open' ? 'bg-accent animate-pulse' : 'bg-muted'}`}></span>
-                                                    {ticket.status === 'Open' ? 'Abierto' : 'Resuelto'}
+                                                    {ticket.status === 'Open' ? 'Open' : 'Resolved'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
@@ -313,7 +307,7 @@ function DashboardPage() {
                                                     href={`/user/tickets/${ticket.id}`}
                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-accent/30 text-accent hover:bg-accent hover:text-white hover:border-accent transition-all"
                                                 >
-                                                    Ver Detalle
+                                                    View Details
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                                                     </svg>

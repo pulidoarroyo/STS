@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 
-// Initialize with the empty options wrapper to keep TypeScript happy
 const ai = new GoogleGenAI({});
 
 export async function POST(request: Request) {
@@ -12,14 +11,12 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Missing required prompt payloads' }, { status: 400 });
         }
 
-        // Force strict JSON mode using standard text processing
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: `${systemPrompt}\n\nAnalyze this content:\n${userContent}`,
             config: {
-                // This tells Gemini to output valid JSON text string natively
                 responseMimeType: 'application/json',
-                temperature: 0.1, // Locked low for predictive results
+                temperature: 0.1,
             }
         });
 
@@ -29,14 +26,11 @@ export async function POST(request: Request) {
             throw new Error('Empty response from generative engine');
         }
 
-        // Clean up markdown code blocks if the model accidentally includes them (e.g., ```json ... ```)
         rawResponseText = rawResponseText.replace(/^```json\s*/i, '').replace(/```$/, '').trim();
 
-        // Validate that it is indeed a parseable JSON structure before passing it forward
         try {
             JSON.parse(rawResponseText);
         } catch {
-            // Fallback object structure if validation fails
             rawResponseText = JSON.stringify({
                 summary: "No se pudo procesar el resumen.",
                 classification: "General",
@@ -45,7 +39,6 @@ export async function POST(request: Request) {
             });
         }
 
-        // Standardize payload format to match what modules/ai/aiService.ts expects
         const normalizedPayload = {
             choices: [
                 {

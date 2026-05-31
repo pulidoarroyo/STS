@@ -1,4 +1,3 @@
-// src/modules/auth/hooks/useAuth.ts
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -12,7 +11,6 @@ export function useAuth() {
             async (event, session) => {
                 if (session?.user) {
                     setUser(session.user);
-                    // Fetch profile without blocking the loading state
                     supabase
                         .from('profiles')
                         .select('*')
@@ -25,7 +23,6 @@ export function useAuth() {
                     setUser(null);
                     setProfile(null);
                 }
-                // Always set loading false after the first event fires
                 setLoading(false);
             }
         );

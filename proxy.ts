@@ -30,7 +30,7 @@ export async function proxy(request: NextRequest) {
         console.log('Proxy: Attempting to get user session...');
         const { data: { user }, error: getUserError } = await supabase.auth.getUser();
         if (getUserError) {
-            throw getUserError; // Re-throw to be caught by the existing catch block
+            throw getUserError;
         }
         console.log('Proxy: User session obtained:', user ? user.id : 'No user');
     } catch (error) {
@@ -47,7 +47,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
     matcher: [
-        // Excludes static files, images, favicon, api endpoints, and auth paths
         '/((?!_next/static|_next/image|favicon.ico|auth|api).*)',
     ],
 }

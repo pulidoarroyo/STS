@@ -5,7 +5,6 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { ticket, ai } = body;
 
-        // Validate minimum required fields
         if (!ticket?.id || !ai) {
             return NextResponse.json(
                 { error: 'Missing required fields: ticket.id and ai block are required' },
@@ -13,15 +12,12 @@ export async function POST(request: Request) {
             );
         }
 
-        // Check if n8n is configured before doing any work
         const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL;
         if (!n8nWebhookUrl) {
             console.warn('[n8n] N8N_WEBHOOK_URL is not set — skipping webhook dispatch.');
             return NextResponse.json({ skipped: true, reason: 'N8N_WEBHOOK_URL not configured' });
         }
 
-        // Build the normalized payload for n8n to route on
-        // Data comes directly from the client — no Supabase re-query needed (avoids RLS issues)
         const payload = {
             ticket: {
                 id: ticket.id,
@@ -48,7 +44,6 @@ export async function POST(request: Request) {
             },
         };
 
-        // Fire the webhook — 8-second timeout so it never blocks the client
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000);
 

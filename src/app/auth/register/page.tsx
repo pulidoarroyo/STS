@@ -40,8 +40,6 @@ export default function RegisterPage() {
         setMessage(null);
 
         try {
-            // 1. Simply register the user credentials. 
-            // We pass full_name in metadata so the DB trigger can grab it!
             const { data, error: signUpError } = await supabase.auth.signUp({
                 email,
                 password,
@@ -53,25 +51,22 @@ export default function RegisterPage() {
             if (signUpError) throw signUpError;
 
             if (data?.user) {
-                // ❌ REMOVED: The manual supabase.from('profiles').insert(...) block is gone!
 
                 setMessage({
                     type: 'success',
-                    text: '¡Registro exitoso! Tu perfil ha sido creado automáticamente. Redirigiendo...'
+                    text: 'Registration successful! Your profile has been created automatically. Redirecting...'
                 });
 
-                // Optional: Clean up form fields
                 setFullName('');
                 setEmail('');
                 setPassword('');
 
-                // Redirect to login after 2 seconds
                 setTimeout(() => {
                     router.push('/auth/login');
                 }, 2000);
             }
         } catch (error: any) {
-            setMessage({ type: 'error', text: error.message || 'Error al registrar el usuario.' });
+            setMessage({ type: 'error', text: error.message || 'Error registering the user.' });
         } finally {
             setLoading(false);
         }
@@ -114,31 +109,31 @@ export default function RegisterPage() {
                 <form className="mt-8 space-y-6" onSubmit={handleRegister}>
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-secondary mb-1.5">Nombre Completo</label>
+                            <label className="block text-sm font-medium text-secondary mb-1.5">Full Name</label>
                             <input
                                 type="text"
                                 required
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
                                 className="appearance-none rounded-lg relative block w-full px-3.5 py-2.5 border border-border bg-elevated placeholder-muted text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent sm:text-sm transition-all"
-                                placeholder="Juan Pérez"
+                                placeholder="John Doe"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-secondary mb-1.5">Correo Electrónico</label>
+                            <label className="block text-sm font-medium text-secondary mb-1.5">Email Address</label>
                             <input
                                 type="email"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="appearance-none rounded-lg relative block w-full px-3.5 py-2.5 border border-border bg-elevated placeholder-muted text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent sm:text-sm transition-all"
-                                placeholder="juan@empresa.com"
+                                placeholder="john@company.com"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-secondary mb-1.5">Contraseña</label>
+                            <label className="block text-sm font-medium text-secondary mb-1.5">Password</label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? 'text' : 'password'}
@@ -176,13 +171,13 @@ export default function RegisterPage() {
                             className={`group relative w-full flex justify-center py-2.5 px-4 text-sm font-semibold rounded-lg text-white transition-all ${loading ? 'bg-accent/50 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent focus:ring-offset-card shadow-lg shadow-accent/20'
                                 }`}
                         >
-                            {loading ? 'Registrando...' : 'Registrarse'}
+                            {loading ? 'Registering...' : 'Sign Up'}
                         </button>
                     </div>
 
                     <div className="text-center text-sm">
                         <Link href="/auth/login" className="font-medium text-accent hover:text-accent-hover transition-colors">
-                            ¿Ya tienes una cuenta? Inicia sesión aquí
+                            Already have an account? Log in here
                         </Link>
                     </div>
                 </form>

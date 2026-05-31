@@ -7,7 +7,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error('Missing Supabase Environment Variables inside .env.local');
 }
 
-// Initialize a single, reusable Supabase client instance
 export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
     auth: {
         persistSession: true,

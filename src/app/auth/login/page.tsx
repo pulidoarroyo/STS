@@ -41,7 +41,6 @@ export default function LoginPage() {
         try {
             console.log("🛠️ 1. Iniciando autenticación...");
 
-            // Test A: Does Supabase Auth work?
             const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
                 email,
                 password,
@@ -57,36 +56,34 @@ export default function LoginPage() {
             if (authData?.user) {
                 console.log("🛠️ 3. Buscando perfil en la base de datos...");
 
-                // Test B: Fetching strictly as an array to expose duplicates
                 const { data: profileData, error: profileError } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', authData.user.id);
 
                 if (profileError) {
-                    console.error("❌ Profile DB Error:", profileError);
+                    console.error("Profile DB Error:", profileError);
                     throw new Error(`Database Error: ${profileError.message}`);
                 }
 
                 console.log("✅ 4. Datos de perfil recibidos:", profileData);
 
                 if (!profileData || profileData.length === 0) {
-                    throw new Error("El login funcionó, pero no existe un perfil en la tabla 'profiles'.");
+                    throw new Error("Login succeeded, but no profile was found in the 'profiles' table.");
                 }
 
                 if (profileData.length > 1) {
-                    console.warn("⚠️ ADVERTENCIA: ¡Se encontraron perfiles duplicados para este usuario!");
+                    console.warn("⚠️ WARNING: Duplicate profiles found for this user!");
                 }
 
                 const userRole = profileData[0].role;
-                console.log("🚀 5. Redirigiendo según el rol:", userRole);
+                console.log("🚀 5. Redirecting based on role:", userRole);
 
-                // Redirect all roles to the dashboard
                 router.push('/dashboard');
             }
         } catch (err: any) {
-            console.error("🔥 Error capturado:", err);
-            setError(err.message || 'Error desconocido al iniciar sesión.');
+            console.error("🔥 Captured error:", err);
+            setError(err.message || 'Unknown error occurred during login.');
         } finally {
             setLoading(false);
         }
@@ -126,19 +123,19 @@ export default function LoginPage() {
                 <form className="mt-8 space-y-6" onSubmit={handleLogin}>
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-secondary mb-1.5">Correo Electrónico</label>
+                            <label className="block text-sm font-medium text-secondary mb-1.5">Email Address</label>
                             <input
                                 type="email"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="appearance-none rounded-lg relative block w-full px-3.5 py-2.5 border border-border bg-elevated placeholder-muted text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent sm:text-sm transition-all"
-                                placeholder="usuario@empresa.com"
+                                placeholder="user@company.com"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-secondary mb-1.5">Contraseña</label>
+                            <label className="block text-sm font-medium text-secondary mb-1.5">Password</label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? 'text' : 'password'}
@@ -176,13 +173,13 @@ export default function LoginPage() {
                             className={`group relative w-full flex justify-center py-2.5 px-4 text-sm font-semibold rounded-lg text-white transition-all ${loading ? 'bg-accent/50 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent focus:ring-offset-card shadow-lg shadow-accent/20'
                                 }`}
                         >
-                            {loading ? 'Autenticando...' : 'Ingresar'}
+                            {loading ? 'Authenticating...' : 'Sign In'}
                         </button>
                     </div>
 
                     <div className="text-center text-sm">
                         <Link href="/auth/register" className="font-medium text-accent hover:text-accent-hover transition-colors">
-                            ¿No tienes una cuenta? Regístrate aquí
+                            Don't have an account? Register here
                         </Link>
                     </div>
                 </form>

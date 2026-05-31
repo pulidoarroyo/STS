@@ -43,13 +43,10 @@ export async function analyzeTicketWithAI(
 
         const result = await response.json();
 
-        //  Updated line to map perfectly to our Gemini route's normalized payload!
         const rawResponseText = result.choices[0].message.content;
 
-        // Parse the structural JSON payload
         const parsedData: AIAnaLysisResult = JSON.parse(rawResponseText);
 
-        // Normalize suggestions: AI sometimes returns a JSON array instead of a plain string
         if (Array.isArray((parsedData as any).suggestions)) {
             parsedData.suggestions = ((parsedData as any).suggestions as string[])
                 .map((s) => `- ${s}`)
@@ -58,7 +55,6 @@ export async function analyzeTicketWithAI(
 
         const latencyMs = Date.now() - startTime;
 
-        // Log tracking metrics to your database table
         const { error: logError } = await supabase
             .from('ai_audit_logs')
             .insert({

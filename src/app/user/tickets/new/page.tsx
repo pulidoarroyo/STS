@@ -6,7 +6,6 @@ import Link from 'next/link';
 import ProtectedRoute from '@/modules/auth/components/ProtectedRoute';
 import { analyzeTicketWithAI } from '@/modules/ai/aiService';
 
-// Definimos la estructura de la categoría para TypeScript
 interface Category {
     id: string | number;
     name: string;
@@ -20,7 +19,6 @@ function NewTicketPage() {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-    // 1. Cargar las categorías reales de Supabase al montar el componente
     useEffect(() => {
         async function fetchCategories() {
             try {
@@ -33,11 +31,11 @@ function NewTicketPage() {
 
                 if (data && data.length > 0) {
                     setCategories(data);
-                    setCategoryId(String(data[0].id)); // Inicializa con el ID de la primera categoría real
+                    setCategoryId(String(data[0].id));
                 }
             } catch (err: any) {
-                console.error('Error cargando categorías:', err.message);
-                setMessage({ type: 'error', text: 'No se pudieron cargar las categorías del sistema.' });
+                console.error('Error loading categories:', err.message);
+                setMessage({ type: 'error', text: 'Could not load system categories.' });
             }
         }
         fetchCategories();
@@ -49,23 +47,21 @@ function NewTicketPage() {
         setMessage(null);
 
         if (title.length < 5) {
-            setMessage({ type: 'error', text: 'El título debe tener al menos 5 caracteres.' });
+            setMessage({ type: 'error', text: 'The title must be at least 5 characters long.' });
             setLoading(false);
             return;
         }
 
         if (!categoryId) {
-            setMessage({ type: 'error', text: 'Por favor, selecciona una categoría válida.' });
+            setMessage({ type: 'error', text: 'Please select a valid category.' });
             setLoading(false);
             return;
         }
 
         try {
-            // 2. Obtener sesión activa del usuario y su perfil
             const { data: { user }, error: authError } = await supabase.auth.getUser();
-            if (authError || !user) throw new Error('No se encontró una sesión activa.');
+            if (authError || !user) throw new Error('No active session found.');
 
-            // Resolver nombre del perfil del usuario (best-effort, no bloquea si falla)
             let reporterName = user.email ?? 'Unknown';
             const { data: userProfile } = await supabase
                 .from('profiles')
@@ -74,16 +70,13 @@ function NewTicketPage() {
                 .maybeSingle();
             if (userProfile?.full_name) reporterName = userProfile.full_name;
 
-            // Evaluamos si el ID es numérico o UUID antes de mandarlo a Postgres
             const parsedCategoryId = isNaN(Number(categoryId)) ? categoryId : parseInt(categoryId);
-
-            // 3. Insertar el ticket en la base de datos relacional
             const { data: ticket, error: dbError } = await supabase
                 .from('tickets')
                 .insert({
                     title,
                     description,
-                    category_id: parsedCategoryId, // Se adapta dinámicamente al tipo correcto
+                    category_id: parsedCategoryId,
                     user_id: user.id,
                     status: 'Open',
                 })
@@ -92,13 +85,10 @@ function NewTicketPage() {
 
             if (dbError) throw dbError;
 
-            setMessage({ type: 'success', text: '¡Ticket creado con éxito! Ejecutando análisis de IA...' });
-
-            // 4. Disparar el flujo analítico de Gemini (Observabilidad y Auditoría)
+            setMessage({ type: 'success', text: 'Ticket created successfully! Running AI analysis...' });
             const aiData = await analyzeTicketWithAI(ticket.id, title, description);
 
             if (aiData) {
-                // 5. Guardar el análisis directamente en el ticket recién creado
                 const { error: updateError } = await supabase
                     .from('tickets')
                     .update({
@@ -111,12 +101,10 @@ function NewTicketPage() {
 
                 if (updateError) throw updateError;
 
-                setMessage({ type: 'success', text: '¡Ticket creado y analizado por la IA de forma exitosa!' });
+                setMessage({ type: 'success', text: 'Ticket created and successfully analyzed by AI!' });
                 setTitle('');
                 setDescription('');
 
-                // 6. Disparar notificación a n8n (fire-and-forget — no bloquea ni rompe la UX)
-                // El cliente ya tiene todos los datos, así evitamos que el servidor re-consulte Supabase
                 const selectedCategory = categories.find(c => String(c.id) === categoryId);
                 fetch('/api/tickets/notify', {
                     method: 'POST',
@@ -146,11 +134,11 @@ function NewTicketPage() {
                     console.warn('[n8n] Webhook dispatch failed silently:', err.message);
                 });
             } else {
-                setMessage({ type: 'success', text: 'Ticket creado, pero el análisis de IA falló. Revisar logs.' });
+                setMessage({ type: 'success', text: 'Ticket created, but AI analysis failed. Please check logs.' });
             }
 
         } catch (error: any) {
-            setMessage({ type: 'error', text: error.message || 'Ocurrió un error inesperado.' });
+            setMessage({ type: 'error', text: error.message || 'An unexpected error occurred.' });
         } finally {
             setLoading(false);
         }
@@ -172,11 +160,11 @@ function NewTicketPage() {
                     </span>
                 </div>
                 <Link href="/dashboard" className="text-sm font-medium text-accent hover:text-accent-hover flex items-center gap-1.5 transition-colors">
-                    ← Volver al Panel de Soporte
+                    ← Back to Support Dashboard
                 </Link>
             </div>
 
-            <h1 className="text-2xl font-bold text-foreground mb-6">Crear Nuevo Ticket de Soporte</h1>
+            <h1 className="text-2xl font-bold text-foreground mb-6">Create New Support Ticket</h1>
 
             {message && (
                 <div className={`p-4 mb-4 rounded-lg text-sm border ${message.type === 'success' ? 'bg-success-subtle text-success border-success/20' : 'bg-danger-subtle text-danger border-danger/20'
@@ -187,19 +175,19 @@ function NewTicketPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                    <label className="block text-sm font-medium text-secondary mb-1.5">Título del Incidente</label>
+                    <label className="block text-sm font-medium text-secondary mb-1.5">Incident Title</label>
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         required
-                        placeholder="Ej. Mi laptop no conecta al WiFi corporativo"
+                        placeholder="e.g. My laptop won't connect to corporate WiFi"
                         className="w-full px-3.5 py-2.5 border border-border bg-elevated rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent text-foreground placeholder-muted transition-all"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-secondary mb-1.5">Categoría</label>
+                    <label className="block text-sm font-medium text-secondary mb-1.5">Category</label>
                     <select
                         value={categoryId}
                         onChange={(e) => setCategoryId(e.target.value)}
@@ -207,7 +195,7 @@ function NewTicketPage() {
                         className="w-full px-3.5 py-2.5 border border-border bg-elevated rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent text-foreground transition-all"
                     >
                         {categories.length === 0 ? (
-                            <option value="">Cargando categorías...</option>
+                            <option value="">Loading categories...</option>
                         ) : (
                             categories.map((cat) => (
                                 <option key={cat.id} value={cat.id}>
@@ -219,13 +207,13 @@ function NewTicketPage() {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-secondary mb-1.5">Descripción Detallada</label>
+                    <label className="block text-sm font-medium text-secondary mb-1.5">Detailed Description</label>
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         required
                         rows={5}
-                        placeholder="Describe detalladamente lo que sucede..."
+                        placeholder="Describe in detail what is happening..."
                         className="w-full px-3.5 py-2.5 border border-border bg-elevated rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent text-foreground placeholder-muted transition-all"
                     />
                 </div>
@@ -236,7 +224,7 @@ function NewTicketPage() {
                     className={`w-full py-2.5 px-4 font-semibold text-white rounded-lg transition-all ${loading ? 'bg-accent/50 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover shadow-lg shadow-accent/20'
                         }`}
                 >
-                    {loading ? 'Procesando...' : 'Enviar Ticket'}
+                    {loading ? 'Processing...' : 'Submit Ticket'}
                 </button>
             </form>
         </div>

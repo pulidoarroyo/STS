@@ -63,8 +63,8 @@ function TicketDetailPage() {
             if (error) throw error;
             setTicket(prev => prev ? { ...prev, status: newStatus } : null);
         } catch (err: any) {
-            console.error('Error al cambiar el estado:', err.message);
-            alert('Error al actualizar el estado: ' + err.message);
+            console.error('Error changing status:', err.message);
+            alert('Error updating status: ' + err.message);
         } finally {
             setUpdatingStatus(false);
         }
@@ -95,8 +95,8 @@ function TicketDetailPage() {
                 assignees: updatedProfile
             } : null);
         } catch (err: any) {
-            console.error('Error al asignar el ticket:', err.message);
-            alert('Error al asignar el ticket: ' + err.message);
+            console.error('Error assigning ticket:', err.message);
+            alert('Error assigning ticket: ' + err.message);
         } finally {
             setUpdatingAssignee(false);
         }
@@ -136,8 +136,8 @@ function TicketDetailPage() {
             } : null);
             setIsEditingAI(false);
         } catch (err: any) {
-            console.error('Error al guardar overrides de IA:', err.message);
-            alert('Error al guardar overrides de IA: ' + err.message);
+            console.error('Error saving AI overrides:', err.message);
+            alert('Error saving AI overrides: ' + err.message);
         } finally {
             setSavingAI(false);
         }
@@ -161,7 +161,7 @@ function TicketDetailPage() {
             if (error) throw error;
             setComments(data as any[] || []);
         } catch (err: any) {
-            console.error('Error al cargar comentarios:', err.message);
+            console.error('Error loading comments:', err.message);
         } finally {
             setLoadingComments(false);
         }
@@ -185,8 +185,8 @@ function TicketDetailPage() {
             setNewComment('');
             await fetchComments();
         } catch (err: any) {
-            console.error('Error al enviar el comentario:', err.message);
-            alert('Error al enviar el comentario: ' + err.message);
+            console.error('Error sending comment:', err.message);
+            alert('Error sending comment: ' + err.message);
         } finally {
             setSubmittingComment(false);
         }
@@ -199,8 +199,6 @@ function TicketDetailPage() {
             try {
                 setLoading(true);
 
-                // Hacemos un join triple: traemos el ticket, el nombre de su categoría 
-                // y los datos del perfil que lo creó.
                 const { data, error } = await supabase
                     .from('tickets')
                     .select(`
@@ -217,7 +215,7 @@ function TicketDetailPage() {
                 if (error) throw error;
                 setTicket(data as any);
             } catch (err: any) {
-                console.error('Error al cargar el detalle:', err.message);
+                console.error('Error loading details:', err.message);
             } finally {
                 setLoading(false);
             }
@@ -228,7 +226,7 @@ function TicketDetailPage() {
     }, [id]);
 
     const parseSuggestions = (raw: string | null) => {
-        if (!raw) return <span className="text-muted">No se generaron recomendaciones automáticas.</span>;
+        if (!raw) return <span className="text-muted">No automatic recommendations were generated.</span>;
         try {
             const parsed = JSON.parse(raw);
             if (Array.isArray(parsed)) {
@@ -244,7 +242,6 @@ function TicketDetailPage() {
                 );
             }
         } catch {
-            // not JSON, fall through to plain text
         }
         return <span className="whitespace-pre-wrap">{raw}</span>;
     };
@@ -270,8 +267,8 @@ function TicketDetailPage() {
     if (!ticket) {
         return (
             <div className="min-h-screen bg-surface flex flex-col justify-center items-center text-foreground">
-                <p className="text-lg font-medium text-muted">No se encontró el ticket solicitado.</p>
-                <Link href="/dashboard" className="mt-4 text-accent hover:underline">Volver al panel</Link>
+                <p className="text-lg font-medium text-muted">The requested ticket was not found.</p>
+                <Link href="/dashboard" className="mt-4 text-accent hover:underline">Back to dashboard</Link>
             </div>
         );
     }
@@ -295,29 +292,29 @@ function TicketDetailPage() {
                         </span>
                     </div>
                     <Link href="/dashboard" className="text-sm font-medium text-accent hover:text-accent-hover flex items-center gap-1.5 transition-colors">
-                        ← Volver al Panel de Soporte
+                        ← Back to Support Dashboard
                     </Link>
                 </div>
 
-                {/* Título Principal */}
+                {/* Main Title */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-border pb-6 mb-8 gap-4">
                     <div>
-                        <span className="text-xs uppercase tracking-wider font-semibold text-muted">Detalle del Incidente</span>
+                        <span className="text-xs uppercase tracking-wider font-semibold text-muted">Incident Details</span>
                         <h1 className="text-2xl sm:text-3xl font-bold text-foreground mt-1">{ticket.title}</h1>
                         <div className="flex items-center gap-3 mt-2 text-xs text-muted">
-                            <span>Registrado el: <strong className="text-secondary">{new Date(ticket.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</strong></span>
+                            <span>Registered on: <strong className="text-secondary">{new Date(ticket.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</strong></span>
                             <span>•</span>
-                            <span>Categoría: <strong className="text-secondary">{ticket.categories?.name || 'General'}</strong></span>
+                            <span>Category: <strong className="text-secondary">{ticket.categories?.name || 'General'}</strong></span>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-3">
                         <span className={`px-3 py-1 text-xs font-bold rounded-full border ${getRiskBadge(ticket.ai_risk_level || '')}`}>
-                            Riesgo IA: {ticket.ai_risk_level || 'Pendiente'}
+                            AI Risk: {ticket.ai_risk_level || 'Pending'}
                         </span>
                         {isAgentOrAdmin ? (
                             <div className="flex items-center gap-2 bg-elevated border border-border rounded-lg px-2.5 py-1">
-                                <label htmlFor="status-select" className="text-[10px] font-bold text-muted uppercase tracking-wider">Estado</label>
+                                <label htmlFor="status-select" className="text-[10px] font-bold text-muted uppercase tracking-wider">Status</label>
                                 <select
                                     id="status-select"
                                     value={ticket.status}
@@ -325,23 +322,22 @@ function TicketDetailPage() {
                                     onChange={(e) => handleStatusChange(e.target.value)}
                                     className="text-xs font-bold bg-transparent text-secondary border-none focus:outline-none focus:ring-0 cursor-pointer pr-1"
                                 >
-                                    <option value="Open">Abierto</option>
-                                    <option value="In Progress">En Proceso</option>
-                                    <option value="Resolved">Resuelto</option>
+                                    <option value="Open">Open</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Resolved">Resolved</option>
                                 </select>
                                 {updatingStatus && (
                                     <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-accent"></div>
                                 )}
                             </div>
                         ) : (
-                            <span className={`px-3 py-1 text-xs font-bold rounded-full border ${
-                                ticket.status === 'Open'
+                            <span className={`px-3 py-1 text-xs font-bold rounded-full border ${ticket.status === 'Open'
                                     ? 'bg-accent-subtle text-accent border-accent/30'
                                     : ticket.status === 'In Progress'
-                                    ? 'bg-warning-subtle text-warning border-warning/30'
-                                    : 'bg-success-subtle text-success border-success/30'
-                            }`}>
-                                {ticket.status === 'Open' ? 'Abierto' : ticket.status === 'In Progress' ? 'En Proceso' : 'Resuelto'}
+                                        ? 'bg-warning-subtle text-warning border-warning/30'
+                                        : 'bg-success-subtle text-success border-success/30'
+                                }`}>
+                                {ticket.status === 'Open' ? 'Open' : ticket.status === 'In Progress' ? 'In Progress' : 'Resolved'}
                             </span>
                         )}
                     </div>
@@ -349,30 +345,30 @@ function TicketDetailPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    {/* Columna Izquierda: Información del Usuario */}
+                    {/* Left Column: User Information */}
                     <div className="lg:col-span-2 space-y-6">
                         <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
-                            <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">Descripción del Reporte</h3>
+                            <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">Report Description</h3>
                             <p className="text-secondary whitespace-pre-wrap leading-relaxed">{ticket.description}</p>
                         </div>
 
-                        {/* Datos de contacto del creador */}
+                        {/* Contact details of the creator */}
                         <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
-                            <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">Usuario Afectado</h3>
+                            <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">Affected User</h3>
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-full bg-elevated flex items-center justify-center text-secondary font-bold uppercase">
                                     {ticket.profiles?.full_name?.[0] || 'U'}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-semibold text-foreground">{ticket.profiles?.full_name || 'Usuario del Sistema'}</p>
-                                    <p className="text-xs text-muted">{ticket.profiles?.email || 'Sin correo registrado'}</p>
+                                    <p className="text-sm font-semibold text-foreground">{ticket.profiles?.full_name || 'System User'}</p>
+                                    <p className="text-xs text-muted">{ticket.profiles?.email || 'No email registered'}</p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Agente Asignado */}
+                        {/* Assigned Agent */}
                         <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
-                            <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">Agente Asignado</h3>
+                            <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">Assigned Agent</h3>
                             {ticket.assignees ? (
                                 <div className="flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-3">
@@ -380,19 +376,19 @@ function TicketDetailPage() {
                                             {ticket.assignees.full_name?.[0] || 'A'}
                                         </div>
                                         <div>
-                                            <p className="text-sm font-semibold text-foreground">{ticket.assignees.full_name || 'Agente de Soporte'}</p>
-                                            <p className="text-xs text-muted">{ticket.assignees.email || 'Sin correo registrado'}</p>
+                                            <p className="text-sm font-semibold text-foreground">{ticket.assignees.full_name || 'Support Agent'}</p>
+                                            <p className="text-xs text-muted">{ticket.assignees.email || 'No email registered'}</p>
                                         </div>
                                     </div>
                                     <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-accent-subtle text-accent border border-accent/30">
-                                        {ticket.assignees.role === 'Admin' ? 'Administrador' : 'Agente'}
+                                        {ticket.assignees.role === 'Admin' ? 'Admin' : 'Agent'}
                                     </span>
                                 </div>
                             ) : (
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-elevated border border-dashed border-border">
                                     <div>
-                                        <p className="text-sm font-medium text-muted">Este ticket no tiene un agente asignado todavía.</p>
-                                        <p className="text-xs text-muted mt-0.5">Los agentes de soporte pueden tomar el control del caso.</p>
+                                        <p className="text-sm font-medium text-muted">This ticket does not have an assigned agent yet.</p>
+                                        <p className="text-xs text-muted mt-0.5">Support agents can take control of the case.</p>
                                     </div>
                                     {isAgentOrAdmin && (
                                         <button
@@ -403,28 +399,28 @@ function TicketDetailPage() {
                                             {updatingAssignee ? (
                                                 <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1.5"></div>
                                             ) : null}
-                                            Asignarme este Ticket
+                                            Assign this Ticket to me
                                         </button>
                                     )}
                                 </div>
                             )}
                         </div>
 
-                        {/* Conversación y Bitácora */}
+                        {/* Conversation & History */}
                         <div className="bg-card p-6 rounded-xl border border-border shadow-sm space-y-6">
                             <div className="flex items-center justify-between border-b border-border pb-4">
                                 <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-accent">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
                                     </svg>
-                                    Conversación y Historial
+                                    Conversation & History
                                 </h3>
                                 <span className="text-xs font-semibold text-muted bg-elevated px-2.5 py-0.5 rounded-full">
-                                    {comments.length} {comments.length === 1 ? 'comentario' : 'comentarios'}
+                                    {comments.length} {comments.length === 1 ? 'comment' : 'comments'}
                                 </span>
                             </div>
 
-                            {/* Timeline de Comentarios */}
+                            {/* Comments Timeline */}
                             <div className="space-y-4 max-h-[450px] overflow-y-auto pr-1">
                                 {loadingComments ? (
                                     <div className="flex justify-center items-center py-10">
@@ -432,8 +428,8 @@ function TicketDetailPage() {
                                     </div>
                                 ) : comments.length === 0 ? (
                                     <div className="text-center py-10 text-muted bg-elevated rounded-lg border border-dashed border-border">
-                                        <p className="text-sm">No hay mensajes en este ticket aún.</p>
-                                        <p className="text-xs mt-0.5">Escribe un comentario abajo para iniciar la conversación.</p>
+                                        <p className="text-sm">No messages in this ticket yet.</p>
+                                        <p className="text-xs mt-0.5">Write a comment below to start the conversation.</p>
                                     </div>
                                 ) : (
                                     comments.map((comment) => {
@@ -441,38 +437,35 @@ function TicketDetailPage() {
                                         return (
                                             <div
                                                 key={comment.id}
-                                                className={`p-4 rounded-xl border transition-all ${
-                                                    isAuthorSupport
+                                                className={`p-4 rounded-xl border transition-all ${isAuthorSupport
                                                         ? 'bg-accent-subtle border-accent/20 ml-6 sm:ml-12'
                                                         : 'bg-elevated border-border mr-6 sm:mr-12'
-                                                }`}
+                                                    }`}
                                             >
                                                 <div className="flex items-start justify-between gap-3 mb-2">
                                                     <div className="flex items-center gap-2.5">
-                                                        <div className={`h-7 w-7 rounded-full flex items-center justify-center font-bold text-xs uppercase ${
-                                                            isAuthorSupport
+                                                        <div className={`h-7 w-7 rounded-full flex items-center justify-center font-bold text-xs uppercase ${isAuthorSupport
                                                                 ? 'bg-accent text-white'
                                                                 : 'bg-elevated text-secondary border border-border'
-                                                        }`}>
+                                                            }`}>
                                                             {comment.profiles?.full_name?.[0] || 'U'}
                                                         </div>
                                                         <div>
                                                             <span className="text-sm font-bold text-foreground">
-                                                                {comment.profiles?.full_name || 'Usuario del Sistema'}
+                                                                {comment.profiles?.full_name || 'System User'}
                                                             </span>
-                                                            <span className={`ml-2 px-1.5 py-0.5 text-[9px] font-bold uppercase rounded ${
-                                                                comment.profiles?.role === 'Admin'
+                                                            <span className={`ml-2 px-1.5 py-0.5 text-[9px] font-bold uppercase rounded ${comment.profiles?.role === 'Admin'
                                                                     ? 'bg-accent-subtle text-accent'
                                                                     : comment.profiles?.role === 'Agent'
-                                                                    ? 'bg-accent-subtle text-accent'
-                                                                    : 'bg-elevated text-muted'
-                                                            }`}>
-                                                                {comment.profiles?.role === 'Admin' ? 'Admin' : comment.profiles?.role === 'Agent' ? 'Agente' : 'Cliente'}
+                                                                        ? 'bg-accent-subtle text-accent'
+                                                                        : 'bg-elevated text-muted'
+                                                                }`}>
+                                                                {comment.profiles?.role === 'Admin' ? 'Admin' : comment.profiles?.role === 'Agent' ? 'Agent' : 'User'}
                                                             </span>
                                                         </div>
                                                     </div>
                                                     <span className="text-[10px] text-muted font-medium">
-                                                        {new Date(comment.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                                        {new Date(comment.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                                     </span>
                                                 </div>
                                                 <p className="text-sm text-secondary whitespace-pre-wrap leading-relaxed pl-9">
@@ -484,11 +477,11 @@ function TicketDetailPage() {
                                 )}
                             </div>
 
-                            {/* Formulario para agregar comentario */}
+                            {/* Form to add comment */}
                             <form onSubmit={handleSubmitComment} className="border-t border-border pt-4 space-y-3">
                                 <div>
                                     <label htmlFor="comment-textarea" className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
-                                        Escribir un Comentario
+                                        Write a Comment
                                     </label>
                                     <textarea
                                         id="comment-textarea"
@@ -496,7 +489,7 @@ function TicketDetailPage() {
                                         value={newComment}
                                         onChange={(e) => setNewComment(e.target.value)}
                                         required
-                                        placeholder="Escribe una respuesta, nota o aclaración..."
+                                        placeholder="Write a response, note, or clarification..."
                                         className="w-full px-3.5 py-2.5 border border-border bg-elevated rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent text-sm text-foreground placeholder-muted transition-all"
                                     />
                                 </div>
@@ -509,14 +502,14 @@ function TicketDetailPage() {
                                         {submittingComment ? (
                                             <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white mr-1.5"></div>
                                         ) : null}
-                                        Enviar Comentario
+                                        Send Comment
                                     </button>
                                 </div>
                             </form>
                         </div>
                     </div>
 
-                    {/* Columna Derecha: Diagnóstico Automatizado de la IA */}
+                    {/* Right Column: AI Automated Diagnosis */}
                     <div className="space-y-6">
                         <div className="bg-elevated text-foreground p-6 rounded-xl shadow-sm border border-border relative overflow-hidden">
 
@@ -525,7 +518,7 @@ function TicketDetailPage() {
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-accent">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
                                     </svg>
-                                    <h2 className="text-md font-bold tracking-tight text-foreground">Análisis de IA</h2>
+                                    <h2 className="text-md font-bold tracking-tight text-foreground">AI Analysis</h2>
                                 </div>
                                 {isAgentOrAdmin && !isEditingAI && (
                                     <button
@@ -535,7 +528,7 @@ function TicketDetailPage() {
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                         </svg>
-                                        Editar
+                                        Edit
                                     </button>
                                 )}
                             </div>
@@ -545,53 +538,53 @@ function TicketDetailPage() {
                             {isEditingAI ? (
                                 <div className="space-y-4 text-xs">
                                     <div>
-                                        <label htmlFor="edit-classification" className="block font-semibold text-accent uppercase tracking-wider mb-1">Clasificación Técnica</label>
+                                        <label htmlFor="edit-classification" className="block font-semibold text-accent uppercase tracking-wider mb-1">Technical Classification</label>
                                         <input
                                             id="edit-classification"
                                             type="text"
                                             value={editClassification}
                                             onChange={(e) => setEditClassification(e.target.value)}
                                             className="w-full bg-card border border-border rounded px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent text-xs placeholder-muted"
-                                            placeholder="Ej. Network, Hardware, Software"
+                                            placeholder="e.g. Network, Hardware, Software"
                                         />
                                     </div>
 
                                     <div>
-                                        <label htmlFor="edit-risk-level" className="block font-semibold text-accent uppercase tracking-wider mb-1">Nivel de Riesgo</label>
+                                        <label htmlFor="edit-risk-level" className="block font-semibold text-accent uppercase tracking-wider mb-1">Risk Level</label>
                                         <select
                                             id="edit-risk-level"
                                             value={editRiskLevel}
                                             onChange={(e) => setEditRiskLevel(e.target.value)}
                                             className="w-full bg-card border border-border rounded px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent text-xs"
                                         >
-                                            <option value="Low">Low (Bajo)</option>
-                                            <option value="Medium">Medium (Medio)</option>
-                                            <option value="High">High (Alto)</option>
-                                            <option value="Critical">Critical (Crítico)</option>
+                                            <option value="Low">Low</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="High">High</option>
+                                            <option value="Critical">Critical</option>
                                         </select>
                                     </div>
 
                                     <div>
-                                        <label htmlFor="edit-summary" className="block font-semibold text-accent uppercase tracking-wider mb-1">Resumen de Diagnóstico</label>
+                                        <label htmlFor="edit-summary" className="block font-semibold text-accent uppercase tracking-wider mb-1">Diagnostic Summary</label>
                                         <textarea
                                             id="edit-summary"
                                             rows={3}
                                             value={editSummary}
                                             onChange={(e) => setEditSummary(e.target.value)}
                                             className="w-full bg-card border border-border rounded px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent text-xs leading-relaxed placeholder-muted"
-                                            placeholder="Resumen del problema..."
+                                            placeholder="Summary of the issue..."
                                         />
                                     </div>
 
                                     <div>
-                                        <label htmlFor="edit-suggestions" className="block font-semibold text-accent uppercase tracking-wider mb-1">Sugerencias de Resolución (Playbook)</label>
+                                        <label htmlFor="edit-suggestions" className="block font-semibold text-accent uppercase tracking-wider mb-1">Resolution Suggestions (Playbook)</label>
                                         <textarea
                                             id="edit-suggestions"
                                             rows={5}
                                             value={editSuggestions}
                                             onChange={(e) => setEditSuggestions(e.target.value)}
                                             className="w-full bg-card border border-border rounded px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent text-xs leading-relaxed font-mono placeholder-muted"
-                                            placeholder="Sugerencias paso a paso..."
+                                            placeholder="Step-by-step suggestions..."
                                         />
                                     </div>
 
@@ -601,7 +594,7 @@ function TicketDetailPage() {
                                             onClick={() => setIsEditingAI(false)}
                                             className="px-3 py-1.5 rounded text-xs font-semibold text-muted hover:text-secondary transition-colors"
                                         >
-                                            Cancelar
+                                            Cancel
                                         </button>
                                         <button
                                             type="button"
@@ -612,24 +605,24 @@ function TicketDetailPage() {
                                             {savingAI && (
                                                 <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
                                             )}
-                                            Guardar
+                                            Save
                                         </button>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="space-y-4 text-sm">
                                     <div>
-                                        <h4 className="text-xs font-semibold text-accent uppercase tracking-wider">Clasificación Técnica</h4>
-                                        <p className="mt-1 font-medium text-foreground">{ticket.ai_classification || 'No clasificado'}</p>
+                                        <h4 className="text-xs font-semibold text-accent uppercase tracking-wider">Technical Classification</h4>
+                                        <p className="mt-1 font-medium text-foreground">{ticket.ai_classification || 'Not classified'}</p>
                                     </div>
 
                                     <div>
-                                        <h4 className="text-xs font-semibold text-accent uppercase tracking-wider">Resumen de Diagnóstico</h4>
-                                        <p className="mt-1 text-secondary leading-relaxed text-xs">{ticket.ai_summary || 'Sin resumen analítico disponible.'}</p>
+                                        <h4 className="text-xs font-semibold text-accent uppercase tracking-wider">Diagnostic Summary</h4>
+                                        <p className="mt-1 text-secondary leading-relaxed text-xs">{ticket.ai_summary || 'No analytical summary available.'}</p>
                                     </div>
 
                                     <div>
-                                        <h4 className="text-xs font-semibold text-accent uppercase tracking-wider mb-1.5">Sugerencias de Resolución (Playbook)</h4>
+                                        <h4 className="text-xs font-semibold text-accent uppercase tracking-wider mb-1.5">Resolution Suggestions (Playbook)</h4>
                                         <div className="text-secondary leading-relaxed text-xs bg-card/50 p-3 rounded-lg border border-border">
                                             {parseSuggestions(ticket.ai_suggestions)}
                                         </div>
