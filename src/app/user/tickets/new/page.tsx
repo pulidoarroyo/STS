@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/modules/auth/components/ProtectedRoute';
 import { analyzeTicketWithAI } from '@/modules/ai/aiService';
 
@@ -12,6 +13,7 @@ interface Category {
 }
 
 function NewTicketPage() {
+    const router = useRouter();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [categories, setCategories] = useState<Category[]>([]);
@@ -101,7 +103,7 @@ function NewTicketPage() {
 
                 if (updateError) throw updateError;
 
-                setMessage({ type: 'success', text: 'Ticket created and successfully analyzed by AI!' });
+                setMessage({ type: 'success', text: 'Ticket created and successfully analyzed by AI! Redirecting to dashboard...' });
                 setTitle('');
                 setDescription('');
 
@@ -133,8 +135,15 @@ function NewTicketPage() {
                 }).catch((err) => {
                     console.warn('[n8n] Webhook dispatch failed silently:', err.message);
                 });
+
+                setTimeout(() => {
+                    router.push('/dashboard');
+                }, 3000);
             } else {
-                setMessage({ type: 'success', text: 'Ticket created, but AI analysis failed. Please check logs.' });
+                setMessage({ type: 'success', text: 'Ticket created, but AI analysis failed. Redirecting to dashboard...' });
+                setTimeout(() => {
+                    router.push('/dashboard');
+                }, 3000);
             }
 
         } catch (error: any) {
