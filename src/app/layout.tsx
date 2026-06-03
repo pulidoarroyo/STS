@@ -13,7 +13,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Navi — AI-Powered Support Desk",
+  title: "Navi",
   description: "Intelligent ticket management and AI triage for modern support teams.",
 };
 
