@@ -381,7 +381,7 @@ function TicketDetailPage() {
                                         </div>
                                     </div>
                                     <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-accent-subtle text-accent border border-accent/30">
-                                        {ticket.assignees.role === 'Admin' ? 'Admin' : 'Agent'}
+                                        {ticket.assignees.role}
                                     </span>
                                 </div>
                             ) : (
