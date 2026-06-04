@@ -1,6 +1,6 @@
-# Stickets — AI-Powered Ticket Management System
+# Navi — AI-Powered Ticket Management System
 
-Stickets is a modern, AI-powered IT Support Ticket Management System designed to streamline support operations. Built on **Next.js 16 (App Router)**, **Tailwind CSS v4**, **Supabase**, and **Google Gemini AI**, Stickets automates ticket categorization, risk assessment, agent suggestions, and external notifications via **n8n**.
+Navi is a modern, AI-powered IT Support Ticket Management System designed to streamline support operations. Built on **Next.js 16 (App Router)**, **Tailwind CSS v4**, **Supabase**, and **Google Gemini AI**, Stickets automates ticket categorization, risk assessment, agent suggestions, and external notifications via **n8n**.
 
 ---
 
@@ -15,7 +15,7 @@ Stickets is a modern, AI-powered IT Support Ticket Management System designed to
     *   **Suggestions**: Instant troubleshooting checklists for agents.
     *   **Risk Leveling**: Auto-assignment of levels (`Low`, `Medium`, `High`, `Critical`).
 *   **AI Audit Logging**: Full execution trace (system/user prompts, responses, latencies) is persisted directly in Supabase (`ai_audit_logs`).
-*   **n8n Webhook Alerts**: Immediate webhook dispatch (`/api/tickets/notify`) triggers external workflow platforms (like n8n) when tickets are created, offering critical alerts.
+*   **n8n Webhook Alerts**: Immediate webhook dispatch (`/api/tickets/notify`) triggers external workflow platforms when tickets are created, offering critical alerts.
 
 ---
 
